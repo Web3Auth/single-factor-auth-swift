@@ -1,12 +1,11 @@
 class AggregateVerifierParams {
     var verifyParams: [VerifierParams]
     var subVerifierIds: [String]
-    var verifierId: String
+    var verifierId: String?
 
-    init(verifyParams: [VerifierParams], subVerifierIds: [String], verifierId: String) {
+    init(verifyParams: [VerifierParams], subVerifierIds: [String]) {
         self.verifyParams = verifyParams
         self.subVerifierIds = subVerifierIds
-        self.verifierId = verifierId
     }
 }
 

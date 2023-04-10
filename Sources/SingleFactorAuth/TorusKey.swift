@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 class TorusKey {
     let privateKey: BigInt

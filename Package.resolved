@@ -48,7 +48,7 @@
     {
       "identity" : "torus-utils-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/torusresearch/torus-utils-swift",
+      "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
         "revision" : "902bf105ecfb5cb83dc1911692163289633316f5",
         "version" : "4.0.0"

@@ -20,7 +20,6 @@ class LoginParams {
 }
 
 struct TorusSubVerifierInfo {
-    var name: String
-    var state: String
-    var identifier: String
+    var verifier: String
+    var idToken: String
 }

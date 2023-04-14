@@ -19,54 +19,54 @@ open class SingleFactorAuth {
         )
     }
 
-    func getKey(loginParams: LoginParams) async -> TorusKey {
+    func getKey(loginParams: LoginParams) async throws -> TorusKey {
         var retrieveSharesResponse: [String: String] = [:];
         
         do {
             var details = try await self.nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
-            let pubDetails = try await self.torusUtils.getUserTypeAndAddress(
+            
+            let pubDetails = try await self.torusUtils.getPublicAddress(
                     endpoints: details.getTorusNodeEndpoints(),
-                    torusNodePub: details.getTorusNodePub(),
+                    torusNodePubs: details.getTorusNodePub(),
                     verifier: loginParams.verifier,
-                    verifierID: loginParams.verifierId)
+                    verifierId: loginParams.verifierId,
+                    isExtended: true)
         
             if pubDetails.typeOfUser == .v1 {
-                let d = try await torusUtils.getOrSetNonce(x: pubDetails.x, y: pubDetails.y)
-                if d.upgraded == true {
-                    throw "User already havee enabled MFA"
+                if let x = pubDetails.x, let y = pubDetails.y {
+                    let d = try await torusUtils.getOrSetNonce(x: x, y: y)
+                    if d.upgraded == true {
+                        throw "User already havee enabled MFA"
+                    }
                 }
             }
             
             if let subVerifierInfoArray = loginParams.subVerifierInfoArray, !subVerifierInfoArray.isEmpty {
-                
-                let aggregateVerifierParams = AggregateVerifierParams(
-                    verifyParams: Array(repeating: VerifierParams(verifierId: loginParams.verifierId, idToken: ""), count: subVerifierInfoArray.count),
-                    subVerifierIds: Array(repeating: "", count: subVerifierInfoArray.count)
-                )
-                
                 var aggregateIdTokenSeeds = [String]()
-                var aggregateVerifierId = ""
+                var subVerifierIds = [String]()
+                var verifyParams = [Any]()
                 
-                for (i, userInfo) in subVerifierInfoArray.enumerated() {
-                    let finalToken = userInfo.idToken
-                    aggregateVerifierParams.verifyParams[i].idToken = finalToken
-                    aggregateVerifierParams.subVerifierIds[i] = userInfo.verifier
+                for (i, _) in subVerifierInfoArray.enumerated() {
+                    aggregateIdTokenSeeds.append(subVerifierInfoArray[i].idToken);
                     
-                    aggregateIdTokenSeeds.append(finalToken)
-                    aggregateVerifierId = loginParams.verifierId
+                    var verifyParam: [String: Any] = [:]
+                    verifyParam["verifier_id"] = loginParams.verifierId
+                    verifyParam["idToken"] = subVerifierInfoArray[i].idToken
+                    
+                    verifyParams.append(verifyParam)
+                    subVerifierIds.append(subVerifierInfoArray[i].verifier)
                 }
-                aggregateIdTokenSeeds.sort()
                 
-                let aggregateTokenString = aggregateIdTokenSeeds.joined(separator: String(Character(UnicodeScalar(29))))
-                let aggregateIdToken = String(aggregateTokenString.sha3(.keccak256).dropFirst(2))
+                let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: " ").sha3(.keccak256))
                 
-                aggregateVerifierParams.verifierId = aggregateVerifierId
-                
-                var aggregateVerifierParamsHashMap = [String: Any]()
-                aggregateVerifierParamsHashMap["verify_params"] = aggregateVerifierParams.verifyParams
-                aggregateVerifierParamsHashMap["sub_verifier_ids"] = aggregateVerifierParams.subVerifierIds
-                aggregateVerifierParamsHashMap["verifier_id"] = aggregateVerifierParams.verifierId
-                details = try await self.nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: aggregateVerifierId)
+                let extraParams = [
+                    "verifier_id": loginParams.verifierId,
+                    "sub_verifier_ids": subVerifierIds,
+                    "verify_params": verifyParams
+                ] as [String: Any]
+                let buffer: Data = try! NSKeyedArchiver.archivedData(withRootObject: extraParams, requiringSecureCoding: false)
+
+                details = try await self.nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
                 
                 retrieveSharesResponse = try await torusUtils.retrieveShares(
                     torusNodePubs: details.getTorusNodePub(),
@@ -74,29 +74,30 @@ open class SingleFactorAuth {
                     verifier: loginParams.verifier,
                     verifierId: loginParams.verifierId,
                     idToken: aggregateIdToken,
-                    extraParams: Data()
+                    extraParams: buffer
                 )
             } else {
-                var verifierParams = [String: Any]()
-                verifierParams["verifier_id"] = loginParams.verifierId
+                let extraParams = ["verifier_id": loginParams.verifierId] as [String: Any]
+                let buffer: Data = try! NSKeyedArchiver.archivedData(withRootObject: extraParams, requiringSecureCoding: false)
+                
                 retrieveSharesResponse = try await self.torusUtils.retrieveShares(
                     torusNodePubs: details.getTorusNodePub(),
                     endpoints: details.getTorusNodeEndpoints(),
                     verifier: loginParams.verifier,
                     verifierId: loginParams.verifierId,
                     idToken: loginParams.idToken,
-                    extraParams: Data()
+                    extraParams: buffer
                 )
             }
-            if retrieveSharesResponse["privKey"] == nil {
+            if retrieveSharesResponse["privateKey"] == nil {
                 throw "Unable to generate privKey"
             }
             
         } catch {
-            print(error)
+            throw error
         }
         
-        let torusKey = TorusKey(privateKey: BigInt(retrieveSharesResponse["privKey"]!, radix: 16)!, publicAddress: retrieveSharesResponse["ethAddress"]!)
+        let torusKey = TorusKey(privateKey: BigInt(retrieveSharesResponse["privateKey"]!, radix: 16)!, publicAddress: retrieveSharesResponse["publicAddress"]!)
         return torusKey;
     }
 

@@ -16,7 +16,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/torusresearch/fetch-node-details-swift.git",from: "4.0.0"),
-        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from:"4.0.0")
+        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from:"4.0.0"),
+        .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -25,10 +26,10 @@ let package = Package(
             name: "SingleFactorAuth",
             dependencies: [
                 .product(name: "FetchNodeDetails", package: "fetch-node-details-swift"),
-                 .product(name: "TorusUtils", package: "torus-utils-swift")
+                .product(name: "TorusUtils", package: "torus-utils-swift")
             ]),
         .testTarget(
             name: "SingleFactorAuthTests",
-            dependencies: ["SingleFactorAuth"]),
+            dependencies: ["SingleFactorAuth",.product(name: "JWTKit", package: "jwt-kit")]),
     ]
 )

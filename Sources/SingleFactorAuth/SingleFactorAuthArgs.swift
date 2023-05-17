@@ -6,6 +6,7 @@ public enum TorusNetwork {
     case TESTNET
     case CYAN
     case AQUA
+    case CELESTE
 }
 
 public class SingleFactorAuthArgs {

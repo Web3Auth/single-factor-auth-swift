@@ -16,22 +16,22 @@ public class SingleFactorAuthArgs {
         .CYAN: FetchNodeDetails.proxyAddressCyan,
         .AQUA: FetchNodeDetails.proxyAddressAqua
     ]
-    
+
     public static let SIGNER_MAP: [TorusNetwork: String] = [
         .MAINNET: "https://signer.tor.us",
         .TESTNET: "https://signer.tor.us",
         .CYAN: "https://signer-polygon.tor.us",
         .AQUA: "https://signer-polygon.tor.us"
     ]
-    
+
     private var network: TorusNetwork
     private var networkUrl: String
-    
+
     public init(network: TorusNetwork, networkUrl: String = "") {
         self.network = network
         self.networkUrl = networkUrl
     }
-    
+
     public func getNetwork() -> EthereumNetworkFND {
         switch network {
         case .MAINNET:
@@ -46,24 +46,24 @@ public class SingleFactorAuthArgs {
             return EthereumNetworkFND.MAINNET
         }
     }
-    
+
     public func getSignerUrl() -> String? {
-        return SingleFactorAuthArgs.SIGNER_MAP[self.network];
+        return SingleFactorAuthArgs.SIGNER_MAP[self.network]
     }
-    
+
     public func setNetwork(network: TorusNetwork) {
         self.network = network
     }
-    
+
     public func getNetworkUrl() -> String? {
-        if (self.networkUrl.isEmpty) {
-            return SingleFactorAuthArgs.CONTRACT_MAP[self.network];
+        if self.networkUrl.isEmpty {
+            return SingleFactorAuthArgs.CONTRACT_MAP[self.network]
         } else {
-            return self.networkUrl;
+            return self.networkUrl
         }
     }
-    
+
     public func setNetworkUrl(networkUrl: String) {
-        self.networkUrl = networkUrl;
+        self.networkUrl = networkUrl
     }
 }

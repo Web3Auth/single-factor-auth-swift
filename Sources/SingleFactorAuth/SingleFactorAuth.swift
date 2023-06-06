@@ -22,11 +22,15 @@ public class SingleFactorAuth {
         )
     }
 
-    public func initialize() async throws -> TorusKey {
+    public func initialize() async -> TorusKey? {
+        do {
             let data = try await sessionManager.authorizeSession()
             guard let privKey = data["privateKey"] as? String,
                   let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError}
-        return .init(privateKey: privKey, publicAddress: publicAddress)
+            return .init(privateKey: privKey, publicAddress: publicAddress)
+        } catch {
+            return nil
+        }
     }
 
     public func getKey(loginParams: LoginParams) async throws -> TorusKey {

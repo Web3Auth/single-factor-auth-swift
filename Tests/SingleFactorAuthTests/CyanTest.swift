@@ -39,10 +39,13 @@ final class CyanTest: XCTestCase {
         let idToken = try generateIdToken(email: TOURUS_TEST_EMAIL)
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TOURUS_TEST_EMAIL, idToken: idToken)
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
-        let savedKey = try await singleFactoreAuth.initialize()
         let requiredPrivateKey = "44ca9a8ac5167ff11e0b48731f7bfde141fbbb0711d0abb54d5da554fb6fd40a"
-        XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
-        XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
+        if let savedKey = try await singleFactoreAuth.initialize() {
+            XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
+            XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
+        } else {
+            XCTFail()
+        }
     }
 
     func testAggregrateGetTorusKey() async throws {

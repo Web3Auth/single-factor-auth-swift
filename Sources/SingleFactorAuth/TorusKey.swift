@@ -10,7 +10,7 @@ public class TorusKey: Codable {
         self.publicAddress = publicAddress
     }
 
-    func getPrivateKey() -> String {
+    public func getPrivateKey() -> String {
         return privateKey
     }
 

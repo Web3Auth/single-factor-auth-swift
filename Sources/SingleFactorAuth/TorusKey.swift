@@ -1,23 +1,23 @@
 import Foundation
 import BigInt
 
-class TorusKey:Codable{
-    let privateKey: BigInt
+public class TorusKey: Codable {
+    let privateKey: String
     let publicAddress: String
-    
-    init(privateKey: BigInt, publicAddress: String) {
+
+    init(privateKey: String, publicAddress: String) {
         self.privateKey = privateKey
         self.publicAddress = publicAddress
     }
-    
-    func getPrivateKey() -> BigInt {
+
+    func getPrivateKey() -> String {
         return privateKey
     }
-    
+
     func getPublicAddress() -> String {
         return publicAddress
     }
-    
+
     func toString() -> String {
         return "TorusKey{ privateKey='\(privateKey.description)', publicAddress='\(publicAddress)' }"
     }

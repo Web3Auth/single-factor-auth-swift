@@ -1,10 +1,10 @@
-class LoginParams {
-    let verifier: String
-    let verifierId: String
-    let idToken: String
-    let subVerifierInfoArray: [TorusSubVerifierInfo]?
+public class LoginParams {
+    public let verifier: String
+    public let verifierId: String
+    public let idToken: String
+    public let subVerifierInfoArray: [TorusSubVerifierInfo]?
 
-    init(verifier: String, verifierId: String, idToken: String) {
+    public init(verifier: String, verifierId: String, idToken: String) {
         self.verifier = verifier
         self.verifierId = verifierId
         self.idToken = idToken
@@ -19,7 +19,7 @@ class LoginParams {
     }
 }
 
-struct TorusSubVerifierInfo {
-    var verifier: String
-    var idToken: String
+public struct TorusSubVerifierInfo {
+    public var verifier: String
+    public var idToken: String
 }

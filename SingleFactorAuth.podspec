@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
   spec.module_name = "SingleFactorAuth"
   spec.source       = { :git => "https://github.com/web3Auth/single-factor-auth-swift", :tag => spec.version }
   spec.source_files = "Sources/SingleFactorAuth/*.{swift,json}","Sources/SingleFactorAuth/**/*.{swift,json}"
-  spec.dependency 'Torus-fetchNodeDetails', '~> 4.0.0'
-  spec.dependency 'Torus-utils', '~> 4.0.0'
+  spec.dependency 'Torus-fetchNodeDetails', '~> 4.0.1'
+  spec.dependency 'Torus-utils', '~> 5.0.0'
   spec.dependency 'TorusSessionManager', '~> 2.0.0'
 end

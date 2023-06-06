@@ -34,7 +34,7 @@ public class SingleFactorAuth {
     }
 
     public func getKey(loginParams: LoginParams) async throws -> TorusKey {
-        var retrieveSharesResponse: [String: String] = [:]
+        var retrieveSharesResponse: RetrieveSharesResponseModel
 
         do {
             var details = try await self.nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
@@ -103,15 +103,12 @@ public class SingleFactorAuth {
                     extraParams: buffer
                 )
             }
-            if retrieveSharesResponse["privateKey"] == nil {
-                throw "Unable to generate privKey"
-            }
 
         } catch {
             throw error
         }
 
-        let torusKey = TorusKey(privateKey: (retrieveSharesResponse["privateKey"])!, publicAddress: retrieveSharesResponse["publicAddress"]!)
+        let torusKey = TorusKey(privateKey: retrieveSharesResponse.privateKey, publicAddress: retrieveSharesResponse.publicAddress)
         try await sessionManager.createSession(data: torusKey)
         return torusKey
     }

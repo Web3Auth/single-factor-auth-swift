@@ -36,7 +36,6 @@ We also have included Session Management in this SDK so call initialize function
         print(savedKey.getPrivateKey())
         print(savedKey.getPublicAddress())
         }
-
 ```
 
 ## Requirements

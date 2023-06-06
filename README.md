@@ -18,6 +18,9 @@ Checkout the official [Web3Auth Documentation](https://web3auth.io/docs/sdk/web/
 ## Getting Started
 - We support both Swift package manager and cocoapods
 
+init the SingleFactAuth class by passing SingleFactorAuthArgs
+Use the getKey function to login the user and get the privateKey and public address for the given user
+We also have included Session Management in this SDK so call initialize function to get TorusKey value without relogging in the user if a user has an active session it will return the TorusKey struct otherwise it will return nil
 
 ## Requirements
 - IOS 14 or above is required 

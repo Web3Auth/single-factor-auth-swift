@@ -39,10 +39,13 @@ final class AquaTest: XCTestCase {
         let idToken = try generateIdToken(email: TOURUS_TEST_EMAIL)
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TOURUS_TEST_EMAIL, idToken: idToken)
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
-        let savedKey = try await singleFactoreAuth.initialize()
-        let requiredPrivateKey = "d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8"
-        XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
-        XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
+        if let savedKey = try await singleFactoreAuth.initialize() {
+            let requiredPrivateKey = "d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8"
+            XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
+            XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
+        } else {
+            XCTFail()
+        }
     }
 
     func testAggregrateGetTorusKey() async throws {

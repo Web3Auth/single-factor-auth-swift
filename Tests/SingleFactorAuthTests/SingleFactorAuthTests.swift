@@ -31,10 +31,13 @@ final class SingleFactorAuthTests: XCTestCase {
         let idToken = try generateIdToken(email: TOURUS_TEST_EMAIL)
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TOURUS_TEST_EMAIL, idToken: idToken)
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
-        let savedKey = try await singleFactoreAuth.initialize()
-        let requiredPrivateKey = "296045a5599afefda7afbdd1bf236358baff580a0fe2db62ae5c1bbe817fbae4"
-        XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
-        XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
+        if let savedKey = try await singleFactoreAuth.initialize() {
+            let requiredPrivateKey = "296045a5599afefda7afbdd1bf236358baff580a0fe2db62ae5c1bbe817fbae4"
+            XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
+            XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
+        } else {
+            XCTFail()
+        }
     }
 
     func testAggregrateGetTorusKey() async throws {

@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SingleFactorAuth",
     platforms: [
-        .iOS(.v13), .macOS(.v10_15)
+        .iOS(.v14), .macOS(.v10_15)
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
@@ -17,7 +17,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/torusresearch/fetch-node-details-swift.git",from: "4.0.0"),
         .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from:"4.0.0"),
-        .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0")
+        .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0"),
+        .package(name:"SessionManager",url: "https://github.com/Web3Auth/session-manager-swift.git",.branch("master"))
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -26,7 +27,8 @@ let package = Package(
             name: "SingleFactorAuth",
             dependencies: [
                 .product(name: "FetchNodeDetails", package: "fetch-node-details-swift"),
-                .product(name: "TorusUtils", package: "torus-utils-swift")
+                .product(name: "TorusUtils", package: "torus-utils-swift"),
+                .product(name: "SessionManager", package: "SessionManager")
             ]),
         .testTarget(
             name: "SingleFactorAuthTests",

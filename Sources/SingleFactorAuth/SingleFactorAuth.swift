@@ -4,12 +4,15 @@ import Combine
 import CryptoSwift
 import Foundation
 import BigInt
+import SessionManager
 
 open class SingleFactorAuth {
     let nodeDetailManager: FetchNodeDetails
     let torusUtils: TorusUtils
+    private var sessionManager:SessionManager
     
     init(singleFactorAuthArgs: SingleFactorAuthArgs) {
+        sessionManager = .init()
         self.nodeDetailManager = FetchNodeDetails(proxyAddress: singleFactorAuthArgs.getNetworkUrl()!, network: singleFactorAuthArgs.getNetwork())
         self.torusUtils = TorusUtils(
             enableOneKey: true,
@@ -17,6 +20,13 @@ open class SingleFactorAuth {
             allowHost: singleFactorAuthArgs.getSignerUrl()! + "/api/allow",
             network: singleFactorAuthArgs.getNetwork()
         )
+    }
+    
+    func initialize() async throws -> TorusKey{
+            let data = try await sessionManager.authorizeSession()
+            guard let privKey = data["privateKey"] as? BigInt,
+                  let publicAddress = data["publicAddress"] as? String else{ throw SessionManagerError.decodingError}
+        return .init(privateKey: privKey, publicAddress: publicAddress)
     }
 
     func getKey(loginParams: LoginParams) async throws -> TorusKey {
@@ -98,7 +108,7 @@ open class SingleFactorAuth {
         }
         
         let torusKey = TorusKey(privateKey: BigInt(retrieveSharesResponse["privateKey"]!, radix: 16)!, publicAddress: retrieveSharesResponse["publicAddress"]!)
+        try await sessionManager.createSession(data: torusKey)
         return torusKey;
     }
-
 }

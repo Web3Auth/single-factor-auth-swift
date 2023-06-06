@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-class TorusKey {
+class TorusKey:Codable{
     let privateKey: BigInt
     let publicAddress: String
     

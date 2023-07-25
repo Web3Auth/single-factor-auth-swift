@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "SingleFactorAuth"
-  spec.version      = "2.0.2"
+  spec.version      = "2.0.3"
   spec.ios.deployment_target  = "14.0"
   spec.summary      = "Enable one key flow for Web3Auth"
   spec.homepage     = "https://github.com/Web3Auth/single-factor-auth-swift"

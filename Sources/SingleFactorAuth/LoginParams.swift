@@ -11,7 +11,7 @@ public class LoginParams {
         self.subVerifierInfoArray = nil
     }
 
-    init(verifier: String, verifierId: String, idToken: String, subVerifierInfoArray: [TorusSubVerifierInfo]) {
+    public init(verifier: String, verifierId: String, idToken: String, subVerifierInfoArray: [TorusSubVerifierInfo]) {
         self.verifier = verifier
         self.verifierId = verifierId
         self.idToken = idToken
@@ -22,4 +22,9 @@ public class LoginParams {
 public struct TorusSubVerifierInfo {
     public var verifier: String
     public var idToken: String
+    
+    public init(verifier: String, idToken: String) {
+        self.verifier = verifier
+        self.idToken = idToken
+    }
 }

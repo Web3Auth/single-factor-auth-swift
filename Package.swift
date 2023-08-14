@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/torusresearch/fetch-node-details-swift.git", from: "4.0.1"),
-        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from: "5.0.0"),
+        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from: "5.1.1"),
         .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0"),
         .package(url: "https://github.com/Web3Auth/session-manager-swift.git", from: "2.0.0")
     ],

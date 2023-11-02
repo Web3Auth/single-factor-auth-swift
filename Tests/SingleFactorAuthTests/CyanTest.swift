@@ -1,10 +1,3 @@
-//
-//  CyanTest.swift
-//
-//
-//  Created by Gaurav Goel on 17/04/23.
-//
-
 import BigInt
 import CommonSources
 import JWTKit
@@ -40,12 +33,9 @@ final class CyanTest: XCTestCase {
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TOURUS_TEST_EMAIL, idToken: idToken)
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
         let requiredPrivateKey = "44ca9a8ac5167ff11e0b48731f7bfde141fbbb0711d0abb54d5da554fb6fd40a"
-        if let savedKey = await singleFactoreAuth.initialize() {
-            XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
-            XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
-        } else {
-            XCTFail()
-        }
+        let savedKey = try await singleFactoreAuth.initialize()
+        XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
+        XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
     }
 
     func testAggregrateGetTorusKey() async throws {

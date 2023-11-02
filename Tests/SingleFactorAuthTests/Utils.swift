@@ -1,10 +1,3 @@
-//
-//  File.swift
-//
-//
-//  Created by Mac on 14/04/2023.
-//
-
 import Foundation
 import JWTKit
 

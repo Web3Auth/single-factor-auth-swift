@@ -22,74 +22,65 @@ public class SingleFactorAuth {
         )
     }
 
-    public func initialize() async -> TorusSFAKey? {
-        do {
-            let data = try await sessionManager.authorizeSession()
-            guard let privKey = data["privateKey"] as? String,
-                  let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
-            return .init(privateKey: privKey, publicAddress: publicAddress)
-        } catch {
-            return nil
-        }
+    public func initialize() async throws -> TorusSFAKey {
+        let data = try await sessionManager.authorizeSession()
+        guard let privKey = data["privateKey"] as? String,
+              let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
+        return .init(privateKey: privKey, publicAddress: publicAddress)
     }
 
     public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
         var retrieveSharesResponse: TorusKey
 
-        do {
-            var details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
+        var details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
 
-            let userDetails = try await torusUtils.getUserTypeAndAddress(endpoints: details.getTorusNodeEndpoints(), torusNodePubs: details.getTorusNodePub(), verifier: loginParams.verifier, verifierId: loginParams.verifierId)
+        let userDetails = try await torusUtils.getUserTypeAndAddress(endpoints: details.getTorusNodeEndpoints(), torusNodePubs: details.getTorusNodePub(), verifier: loginParams.verifier, verifierId: loginParams.verifierId)
 
-            if userDetails.metadata?.upgraded == true {
-                throw "User already has enabled MFA"
+        if userDetails.metadata?.upgraded == true {
+            throw "User already has enabled MFA"
+        }
+
+        if let subVerifierInfoArray = loginParams.subVerifierInfoArray, !subVerifierInfoArray.isEmpty {
+            var aggregateIdTokenSeeds = [String]()
+            var subVerifierIds = [String]()
+            var verifyParams = [Any]()
+
+            for (i, _) in subVerifierInfoArray.enumerated() {
+                aggregateIdTokenSeeds.append(subVerifierInfoArray[i].idToken)
+
+                var verifyParam: [String: Any] = [:]
+                verifyParam["verifier_id"] = loginParams.verifierId
+                verifyParam["idToken"] = subVerifierInfoArray[i].idToken
+
+                verifyParams.append(verifyParam)
+                subVerifierIds.append(subVerifierInfoArray[i].verifier)
             }
 
-            if let subVerifierInfoArray = loginParams.subVerifierInfoArray, !subVerifierInfoArray.isEmpty {
-                var aggregateIdTokenSeeds = [String]()
-                var subVerifierIds = [String]()
-                var verifyParams = [Any]()
+            let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: " ").sha3(.keccak256))
 
-                for (i, _) in subVerifierInfoArray.enumerated() {
-                    aggregateIdTokenSeeds.append(subVerifierInfoArray[i].idToken)
+            let extraParams = VerifierParams(verifier_id: loginParams.verifierId)
 
-                    var verifyParam: [String: Any] = [:]
-                    verifyParam["verifier_id"] = loginParams.verifierId
-                    verifyParam["idToken"] = subVerifierInfoArray[i].idToken
+            details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
 
-                    verifyParams.append(verifyParam)
-                    subVerifierIds.append(subVerifierInfoArray[i].verifier)
-                }
+            retrieveSharesResponse = try await torusUtils.retrieveShares(
+                endpoints: details.getTorusNodeEndpoints(),
+                torusNodePubs: details.getTorusNodePub(),
+                indexes: details.getTorusIndexes(),
+                verifier: loginParams.verifier,
+                verifierParams: extraParams,
+                idToken: aggregateIdToken
+            )
+        } else {
+            let extraParams = VerifierParams(verifier_id: loginParams.verifierId)
 
-                let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: " ").sha3(.keccak256))
-
-                let extraParams = VerifierParams(verifier_id: loginParams.verifierId)
-
-                details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
-
-                retrieveSharesResponse = try await torusUtils.retrieveShares(
-                    endpoints: details.getTorusNodeEndpoints(),
-                    torusNodePubs: details.getTorusNodePub(),
-                    indexes: details.getTorusIndexes(),
-                    verifier: loginParams.verifier,
-                    verifierParams: extraParams,
-                    idToken: aggregateIdToken
-                )
-            } else {
-                let extraParams = VerifierParams(verifier_id: loginParams.verifierId)
-
-                retrieveSharesResponse = try await torusUtils.retrieveShares(
-                    endpoints: details.getTorusNodeEndpoints(),
-                    torusNodePubs: details.getTorusNodePub(),
-                    indexes: details.getTorusIndexes(),
-                    verifier: loginParams.verifier,
-                    verifierParams: extraParams,
-                    idToken: loginParams.idToken
-                )
-            }
-
-        } catch {
-            throw error
+            retrieveSharesResponse = try await torusUtils.retrieveShares(
+                endpoints: details.getTorusNodeEndpoints(),
+                torusNodePubs: details.getTorusNodePub(),
+                indexes: details.getTorusIndexes(),
+                verifier: loginParams.verifier,
+                verifierParams: extraParams,
+                idToken: loginParams.idToken
+            )
         }
 
         let publicAddress = (retrieveSharesResponse.finalKeyData?.X ?? "") + (retrieveSharesResponse.finalKeyData?.Y ?? "")

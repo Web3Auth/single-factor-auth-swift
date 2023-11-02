@@ -5,14 +5,14 @@
 //  Created by Gaurav Goel on 17/04/23.
 //
 
-import XCTest
-import JWTKit
 import BigInt
+import CommonSources
+import JWTKit
+import XCTest
 
 @testable import SingleFactorAuth
 
 final class CyanTest: XCTestCase {
-
     var singleFactoreAuth: SingleFactorAuth!
     var singleFactorAuthArgs: SingleFactorAuthArgs!
 
@@ -21,7 +21,7 @@ final class CyanTest: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(network: TorusNetwork.CYAN)
+        singleFactorAuthArgs = SingleFactorAuthArgs(network: TorusNetwork.legacy(.CYAN))
         singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
     }
 
@@ -40,7 +40,7 @@ final class CyanTest: XCTestCase {
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TOURUS_TEST_EMAIL, idToken: idToken)
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
         let requiredPrivateKey = "44ca9a8ac5167ff11e0b48731f7bfde141fbbb0711d0abb54d5da554fb6fd40a"
-        if let savedKey = try await singleFactoreAuth.initialize() {
+        if let savedKey = await singleFactoreAuth.initialize() {
             XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
             XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
         } else {

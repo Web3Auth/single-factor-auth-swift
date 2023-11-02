@@ -1,15 +1,15 @@
 class AggregateVerifierParams {
-    var verifyParams: [VerifierParams]
+    var verifyParams: [VerifierSFAParams]
     var subVerifierIds: [String]
     var verifierId: String?
 
-    init(verifyParams: [VerifierParams], subVerifierIds: [String]) {
+    init(verifyParams: [VerifierSFAParams], subVerifierIds: [String]) {
         self.verifyParams = verifyParams
         self.subVerifierIds = subVerifierIds
     }
 }
 
-struct VerifierParams {
+struct VerifierSFAParams {
     var verifierId: String
     var idToken: String
 }

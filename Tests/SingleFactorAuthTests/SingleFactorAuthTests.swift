@@ -1,11 +1,11 @@
-import XCTest
-import JWTKit
 import BigInt
+import CommonSources
+import JWTKit
+import XCTest
 
 @testable import SingleFactorAuth
 
 final class SingleFactorAuthTests: XCTestCase {
-
     var singleFactoreAuth: SingleFactorAuth!
     var singleFactorAuthArgs: SingleFactorAuthArgs!
 
@@ -14,7 +14,7 @@ final class SingleFactorAuthTests: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(network: TorusNetwork.TESTNET)
+        singleFactorAuthArgs = SingleFactorAuthArgs(network: TorusNetwork.legacy(.TESTNET))
         singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
     }
 
@@ -31,7 +31,7 @@ final class SingleFactorAuthTests: XCTestCase {
         let idToken = try generateIdToken(email: TOURUS_TEST_EMAIL)
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TOURUS_TEST_EMAIL, idToken: idToken)
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
-        if let savedKey = try await singleFactoreAuth.initialize() {
+        if let savedKey = await singleFactoreAuth.initialize() {
             let requiredPrivateKey = "296045a5599afefda7afbdd1bf236358baff580a0fe2db62ae5c1bbe817fbae4"
             XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
             XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())

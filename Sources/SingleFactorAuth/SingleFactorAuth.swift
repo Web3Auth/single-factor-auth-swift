@@ -1,20 +1,20 @@
-import FetchNodeDetails
-import TorusUtils
+import BigInt
 import Combine
 import CryptoSwift
+import FetchNodeDetails
 import Foundation
-import BigInt
 import SessionManager
+import TorusUtils
 
 public class SingleFactorAuth {
-    let nodeDetailManager: FetchNodeDetails
+    let nodeDetailManager: NodeDetailManager
     let torusUtils: TorusUtils
     private var sessionManager: SessionManager
 
-   public init(singleFactorAuthArgs: SingleFactorAuthArgs) {
+    public init(singleFactorAuthArgs: SingleFactorAuthArgs) {
         sessionManager = .init()
-        self.nodeDetailManager = FetchNodeDetails(proxyAddress: singleFactorAuthArgs.getNetworkUrl()!, network: singleFactorAuthArgs.getNetwork())
-        self.torusUtils = TorusUtils(
+        nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork())
+        torusUtils = TorusUtils(
             enableOneKey: true,
             signerHost: singleFactorAuthArgs.getSignerUrl()! + "/api/sign",
             allowHost: singleFactorAuthArgs.getSignerUrl()! + "/api/allow",
@@ -22,37 +22,27 @@ public class SingleFactorAuth {
         )
     }
 
-    public func initialize() async -> TorusKey? {
+    public func initialize() async -> TorusSFAKey? {
         do {
             let data = try await sessionManager.authorizeSession()
             guard let privKey = data["privateKey"] as? String,
-                  let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError}
+                  let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
             return .init(privateKey: privKey, publicAddress: publicAddress)
         } catch {
             return nil
         }
     }
 
-    public func getKey(loginParams: LoginParams) async throws -> TorusKey {
-        var retrieveSharesResponse: RetrieveSharesResponseModel
+    public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
+        var retrieveSharesResponse: TorusKey
 
         do {
-            var details = try await self.nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
+            var details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
 
-            let pubDetails = try await self.torusUtils.getPublicAddress(
-                    endpoints: details.getTorusNodeEndpoints(),
-                    torusNodePubs: details.getTorusNodePub(),
-                    verifier: loginParams.verifier,
-                    verifierId: loginParams.verifierId,
-                    isExtended: true)
+            let userDetails = try await torusUtils.getUserTypeAndAddress(endpoints: details.getTorusNodeEndpoints(), torusNodePubs: details.getTorusNodePub(), verifier: loginParams.verifier, verifierId: loginParams.verifierId)
 
-            if pubDetails.typeOfUser == .v1 {
-                if let x = pubDetails.x, let y = pubDetails.y {
-                    let d = try await torusUtils.getOrSetNonce(x: x, y: y)
-                    if d.upgraded == true {
-                        throw "User already havee enabled MFA"
-                    }
-                }
+            if userDetails.metadata?.upgraded == true {
+                throw "User already has enabled MFA"
             }
 
             if let subVerifierInfoArray = loginParams.subVerifierInfoArray, !subVerifierInfoArray.isEmpty {
@@ -73,34 +63,28 @@ public class SingleFactorAuth {
 
                 let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: " ").sha3(.keccak256))
 
-                let extraParams = [
-                    "verifier_id": loginParams.verifierId,
-                    "sub_verifier_ids": subVerifierIds,
-                    "verify_params": verifyParams
-                ] as [String: Any]
-                let buffer: Data = try! NSKeyedArchiver.archivedData(withRootObject: extraParams, requiringSecureCoding: false)
+                let extraParams = VerifierParams(verifier_id: loginParams.verifierId)
 
-                details = try await self.nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
+                details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
 
                 retrieveSharesResponse = try await torusUtils.retrieveShares(
-                    torusNodePubs: details.getTorusNodePub(),
                     endpoints: details.getTorusNodeEndpoints(),
+                    torusNodePubs: details.getTorusNodePub(),
+                    indexes: details.getTorusIndexes(),
                     verifier: loginParams.verifier,
-                    verifierId: loginParams.verifierId,
-                    idToken: aggregateIdToken,
-                    extraParams: buffer
+                    verifierParams: extraParams,
+                    idToken: aggregateIdToken
                 )
             } else {
-                let extraParams = ["verifier_id": loginParams.verifierId] as [String: Any]
-                let buffer: Data = try! NSKeyedArchiver.archivedData(withRootObject: extraParams, requiringSecureCoding: false)
+                let extraParams = VerifierParams(verifier_id: loginParams.verifierId)
 
-                retrieveSharesResponse = try await self.torusUtils.retrieveShares(
-                    torusNodePubs: details.getTorusNodePub(),
+                retrieveSharesResponse = try await torusUtils.retrieveShares(
                     endpoints: details.getTorusNodeEndpoints(),
+                    torusNodePubs: details.getTorusNodePub(),
+                    indexes: details.getTorusIndexes(),
                     verifier: loginParams.verifier,
-                    verifierId: loginParams.verifierId,
-                    idToken: loginParams.idToken,
-                    extraParams: buffer
+                    verifierParams: extraParams,
+                    idToken: loginParams.idToken
                 )
             }
 
@@ -108,8 +92,11 @@ public class SingleFactorAuth {
             throw error
         }
 
-        let torusKey = TorusKey(privateKey: retrieveSharesResponse.privateKey, publicAddress: retrieveSharesResponse.publicAddress)
-        try await sessionManager.createSession(data: torusKey)
+        let publicAddress = (retrieveSharesResponse.finalKeyData?.X ?? "") + (retrieveSharesResponse.finalKeyData?.Y ?? "")
+        let privateKey = retrieveSharesResponse.finalKeyData?.privKey ?? ""
+
+        let torusKey = TorusSFAKey(privateKey: privateKey, publicAddress: publicAddress)
+        _ = try await sessionManager.createSession(data: torusKey)
         return torusKey
     }
 }

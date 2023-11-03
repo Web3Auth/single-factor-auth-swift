@@ -24,7 +24,7 @@ final class AquaTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
 
         let requiredPrivateKey = "d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8"
-        XCTAssertTrue(requiredPrivateKey == torusKey.getPrivateKey())
+        XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
         XCTAssertEqual(torusKey.publicAddress, torusKey.getPublicAddress())
     }
 
@@ -34,7 +34,7 @@ final class AquaTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
         let savedKey = try await singleFactoreAuth.initialize()
         let requiredPrivateKey = "d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8"
-        XCTAssertTrue(requiredPrivateKey == savedKey.getPrivateKey())
+        XCTAssertEqual(requiredPrivateKey, savedKey.getPrivateKey())
         XCTAssertEqual(torusKey.publicAddress, savedKey.getPublicAddress())
     }
 
@@ -44,7 +44,7 @@ final class AquaTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
 
         let requiredPrivateKey = "6f8b884f19975fb0d138ed21b22a6a7e1b79e37f611d0a29f1442b34efc6bacd"
-        XCTAssertTrue(requiredPrivateKey == torusKey.getPrivateKey())
+        XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
         XCTAssertEqual(torusKey.publicAddress, torusKey.getPublicAddress())
     }
 }

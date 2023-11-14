@@ -62,10 +62,10 @@ public class SingleFactorAuth {
                 "verify_params": verifyParams
             ] as [String : Codable]
             
-            let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: " ").sha3(.keccak256))
+            let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: "\u{001d}").sha3(.keccak256))
 
             details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
-            
+
             let additionalParams = VerifierParams(verifier_id: loginParams.verifierId, additionalParams: extraParams)
             
             retrieveSharesResponse = try await torusUtils.retrieveShares(

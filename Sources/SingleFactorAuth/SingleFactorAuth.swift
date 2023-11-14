@@ -56,18 +56,26 @@ public class SingleFactorAuth {
                 subVerifierIds.append(subVerifierInfoArray[i].verifier)
             }
 
+            let buffer: Data = try! NSKeyedArchiver.archivedData(withRootObject: verifyParams, requiringSecureCoding: false)
+            
+            let extraParams = [
+                "verifier_id": loginParams.verifierId,
+                "sub_verifier_ids": subVerifierIds,
+                "verify_params": buffer
+            ] as [String : Codable]
+            
             let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: " ").sha3(.keccak256))
 
-            let extraParams = VerifierParams(verifier_id: loginParams.verifierId)
-
             details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
-
+            
+            let additionalParams = VerifierParams(verifier_id: loginParams.verifierId, additionalParams: extraParams)
+            
             retrieveSharesResponse = try await torusUtils.retrieveShares(
                 endpoints: details.getTorusNodeEndpoints(),
                 torusNodePubs: details.getTorusNodePub(),
                 indexes: details.getTorusIndexes(),
                 verifier: loginParams.verifier,
-                verifierParams: extraParams,
+                verifierParams: additionalParams,
                 idToken: aggregateIdToken
             )
         } else {

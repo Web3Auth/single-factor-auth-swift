@@ -43,12 +43,12 @@ public class SingleFactorAuth {
         if let subVerifierInfoArray = loginParams.subVerifierInfoArray, !subVerifierInfoArray.isEmpty {
             var aggregateIdTokenSeeds = [String]()
             var subVerifierIds = [String]()
-            var verifyParams = [Any]()
+            var verifyParams = [[String: String]]()
 
             for (i, _) in subVerifierInfoArray.enumerated() {
                 aggregateIdTokenSeeds.append(subVerifierInfoArray[i].idToken)
 
-                var verifyParam: [String: Any] = [:]
+                var verifyParam: [String: String] = [:]
                 verifyParam["verifier_id"] = loginParams.verifierId
                 verifyParam["idToken"] = subVerifierInfoArray[i].idToken
 
@@ -56,12 +56,10 @@ public class SingleFactorAuth {
                 subVerifierIds.append(subVerifierInfoArray[i].verifier)
             }
 
-            let buffer: Data = try! NSKeyedArchiver.archivedData(withRootObject: verifyParams, requiringSecureCoding: false)
-            
             let extraParams = [
                 "verifier_id": loginParams.verifierId,
                 "sub_verifier_ids": subVerifierIds,
-                "verify_params": buffer
+                "verify_params": verifyParams
             ] as [String : Codable]
             
             let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: " ").sha3(.keccak256))

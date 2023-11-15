@@ -55,17 +55,17 @@ public class SingleFactorAuth {
                 subVerifierIds.append(value.verifier)
             }
             aggregateIdTokenSeeds.sort()
-            
+
             let extraParams = [
                 "verifier_id": loginParams.verifierId,
                 "sub_verifier_ids": subVerifierIds,
-                "verify_params": verifyParams
-            ] as [String : Codable]
-            
+                "verify_params": verifyParams,
+            ] as [String: Codable]
+
             let verifierParams = VerifierParams(verifier_id: loginParams.verifierId)
-            
-            let aggregateIdToken = String(String(bytes: aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256)).dropFirst(2)) //drop 0x
-            
+
+            let aggregateIdToken = String(String(bytes: aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256)).dropFirst(2)) // drop 0x
+
             retrieveSharesResponse = try await torusUtils.retrieveShares(
                 endpoints: details.getTorusNodeEndpoints(),
                 torusNodePubs: details.getTorusNodePub(),

@@ -44,7 +44,6 @@ public class SingleFactorAuth {
             var aggregateIdTokenSeeds = [String]()
             var subVerifierIds = [String]()
             var verifyParams = [[String: String]]()
-
             for value in subVerifierInfoArray {
                 aggregateIdTokenSeeds.append(value.idToken)
 
@@ -55,27 +54,23 @@ public class SingleFactorAuth {
                 verifyParams.append(verifyParam)
                 subVerifierIds.append(value.verifier)
             }
-
             aggregateIdTokenSeeds.sort()
             
-            let extraParams = [
+            let additionalParams = [
                 "verifier_id": loginParams.verifierId,
                 "sub_verifier_ids": subVerifierIds,
                 "verify_params": verifyParams
             ] as [String : Codable]
             
-            let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: "\u{001d}").sha3(.keccak256))
-            
-            details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
-
-            let additionalParams = VerifierParams(verifier_id: loginParams.verifierId, additionalParams: extraParams)
+            let extraParams = VerifierParams(verifier_id: loginParams.verifierId, additionalParams: additionalParams)
+            let aggregateIdToken = String(String(bytes: aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256)).dropFirst(2)) //drop 0x
             
             retrieveSharesResponse = try await torusUtils.retrieveShares(
                 endpoints: details.getTorusNodeEndpoints(),
                 torusNodePubs: details.getTorusNodePub(),
                 indexes: details.getTorusIndexes(),
                 verifier: loginParams.verifier,
-                verifierParams: additionalParams,
+                verifierParams: extraParams,
                 idToken: aggregateIdToken
             )
         } else {

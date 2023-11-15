@@ -32,7 +32,7 @@ public class SingleFactorAuth {
     public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
         var retrieveSharesResponse: TorusKey
 
-        var details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
+        let details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
 
         let userDetails = try await torusUtils.getUserTypeAndAddress(endpoints: details.getTorusNodeEndpoints(), torusNodePubs: details.getTorusNodePub(), verifier: loginParams.verifier, verifierId: loginParams.verifierId)
 
@@ -56,13 +56,14 @@ public class SingleFactorAuth {
             }
             aggregateIdTokenSeeds.sort()
             
-            let additionalParams = [
+            let extraParams = [
                 "verifier_id": loginParams.verifierId,
                 "sub_verifier_ids": subVerifierIds,
                 "verify_params": verifyParams
             ] as [String : Codable]
             
-            let extraParams = VerifierParams(verifier_id: loginParams.verifierId, additionalParams: additionalParams)
+            let verifierParams = VerifierParams(verifier_id: loginParams.verifierId)
+            
             let aggregateIdToken = String(String(bytes: aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256)).dropFirst(2)) //drop 0x
             
             retrieveSharesResponse = try await torusUtils.retrieveShares(
@@ -70,18 +71,19 @@ public class SingleFactorAuth {
                 torusNodePubs: details.getTorusNodePub(),
                 indexes: details.getTorusIndexes(),
                 verifier: loginParams.verifier,
-                verifierParams: extraParams,
-                idToken: aggregateIdToken
+                verifierParams: verifierParams,
+                idToken: aggregateIdToken,
+                extraParams: extraParams
             )
         } else {
-            let extraParams = VerifierParams(verifier_id: loginParams.verifierId)
+            let verifierParams = VerifierParams(verifier_id: loginParams.verifierId)
 
             retrieveSharesResponse = try await torusUtils.retrieveShares(
                 endpoints: details.getTorusNodeEndpoints(),
                 torusNodePubs: details.getTorusNodePub(),
                 indexes: details.getTorusIndexes(),
                 verifier: loginParams.verifier,
-                verifierParams: extraParams,
+                verifierParams: verifierParams,
                 idToken: loginParams.idToken
             )
         }

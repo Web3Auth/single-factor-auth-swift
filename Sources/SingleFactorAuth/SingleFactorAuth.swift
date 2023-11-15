@@ -45,17 +45,19 @@ public class SingleFactorAuth {
             var subVerifierIds = [String]()
             var verifyParams = [[String: String]]()
 
-            for (i, _) in subVerifierInfoArray.enumerated() {
-                aggregateIdTokenSeeds.append(subVerifierInfoArray[i].idToken)
+            for value in subVerifierInfoArray {
+                aggregateIdTokenSeeds.append(value.idToken)
 
                 var verifyParam: [String: String] = [:]
                 verifyParam["verifier_id"] = loginParams.verifierId
-                verifyParam["idToken"] = subVerifierInfoArray[i].idToken
+                verifyParam["idtoken"] = value.idToken
 
                 verifyParams.append(verifyParam)
-                subVerifierIds.append(subVerifierInfoArray[i].verifier)
+                subVerifierIds.append(value.verifier)
             }
 
+            aggregateIdTokenSeeds.sort()
+            
             let extraParams = [
                 "verifier_id": loginParams.verifierId,
                 "sub_verifier_ids": subVerifierIds,
@@ -63,7 +65,7 @@ public class SingleFactorAuth {
             ] as [String : Codable]
             
             let aggregateIdToken = String(aggregateIdTokenSeeds.joined(separator: "\u{001d}").sha3(.keccak256))
-
+            
             details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
 
             let additionalParams = VerifierParams(verifier_id: loginParams.verifierId, additionalParams: extraParams)

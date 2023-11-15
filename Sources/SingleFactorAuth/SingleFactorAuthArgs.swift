@@ -4,6 +4,8 @@ import TorusUtils
 
 public class SingleFactorAuthArgs {
     public static let SIGNER_MAP: [TorusNetwork: String] = [
+        TorusNetwork.sapphire(SapphireNetwork.SAPPHIRE_MAINNET): "https://signer.tor.us",
+        TorusNetwork.sapphire(SapphireNetwork.SAPPHIRE_DEVNET): "https://signer.tor.us",
         TorusNetwork.legacy(LegacyNetwork.MAINNET): "https://signer.tor.us",
         TorusNetwork.legacy(LegacyNetwork.TESTNET): "https://signer.tor.us",
         TorusNetwork.legacy(LegacyNetwork.CYAN): "https://signer-polygon.tor.us",

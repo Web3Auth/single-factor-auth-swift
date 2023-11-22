@@ -1,7 +1,7 @@
-import Foundation
 import BigInt
+import Foundation
 
-public class TorusKey: Codable {
+public class TorusSFAKey: Codable {
     let privateKey: String
     let publicAddress: String
 

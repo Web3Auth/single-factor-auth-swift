@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "curvelib.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tkey/curvelib.swift",
+      "state" : {
+        "revision" : "508322dbd3b18a92c1e9c4eb68da6a228acb1d7d",
+        "version" : "0.1.1"
+      }
+    },
+    {
       "identity" : "fetch-node-details-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
@@ -176,8 +185,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift",
       "state" : {
-        "revision" : "b7e4eff3bf1a135cd408f6679952ae7b476ba833",
-        "version" : "6.1.0"
+        "revision" : "76c9b17b461152e98216dddbbf320071011cf1cb",
+        "version" : "7.0.0"
       }
     },
     {

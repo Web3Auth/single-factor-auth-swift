@@ -18,7 +18,8 @@ public class SingleFactorAuth {
             enableOneKey: true,
             signerHost: singleFactorAuthArgs.getSignerUrl()! + "/api/sign",
             allowHost: singleFactorAuthArgs.getSignerUrl()! + "/api/allow",
-            network: singleFactorAuthArgs.getNetwork()
+            network: singleFactorAuthArgs.getNetwork(),
+            clientId: singleFactorAuthArgs.getWeb3AuthClientId()
         )
     }
 

@@ -16,7 +16,7 @@ public class SingleFactorAuthArgs {
     private var networkUrl: String
     private var web3AuthClientId: String
 
-    public init(web3AuthClientId: String = "", network: TorusNetwork, networkUrl: String = "") {
+    public init(web3AuthClientId: String, network: TorusNetwork, networkUrl: String = "") {
         self.network = network
         self.networkUrl = networkUrl
         self.web3AuthClientId = web3AuthClientId

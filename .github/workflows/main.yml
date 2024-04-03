@@ -25,6 +25,6 @@ jobs:
       - name: xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "14.2.0"
+          xcode-version: "15.2.0"
       - name: package
         run: xcodebuild test -scheme SingleFactorAuth -destination "platform=iOS Simulator,OS=16.2,name=iPhone 14" COMPILER_INDEX_STORE_ENABLE=NO

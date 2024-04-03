@@ -18,7 +18,8 @@ public class SingleFactorAuth {
             enableOneKey: true,
             signerHost: singleFactorAuthArgs.getSignerUrl()! + "/api/sign",
             allowHost: singleFactorAuthArgs.getSignerUrl()! + "/api/allow",
-            network: singleFactorAuthArgs.getNetwork()
+            network: singleFactorAuthArgs.getNetwork(),
+            clientId: singleFactorAuthArgs.getWeb3AuthClientId()
         )
     }
 
@@ -29,7 +30,7 @@ public class SingleFactorAuth {
         return .init(privateKey: privKey, publicAddress: publicAddress)
     }
 
-    public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
+    public func getTorusKey(loginParams: LoginParams) async throws -> TorusKey {
         var retrieveSharesResponse: TorusKey
 
         let details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
@@ -63,8 +64,8 @@ public class SingleFactorAuth {
             ] as [String: Codable]
 
             let verifierParams = VerifierParams(verifier_id: loginParams.verifierId)
-
-            let aggregateIdToken = String(String(bytes: aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256)).dropFirst(2)) // drop 0x
+            
+            let aggregateIdToken =  aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256).toHexString()  // drop 0x
 
             retrieveSharesResponse = try await torusUtils.retrieveShares(
                 endpoints: details.getTorusNodeEndpoints(),
@@ -88,11 +89,17 @@ public class SingleFactorAuth {
             )
         }
 
-        let publicAddress = (retrieveSharesResponse.finalKeyData?.X ?? "") + (retrieveSharesResponse.finalKeyData?.Y ?? "")
-        let privateKey = retrieveSharesResponse.finalKeyData?.privKey ?? ""
+        return retrieveSharesResponse
+    }
+    
+    public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
+        let torusKey = try await self.getTorusKey(loginParams: loginParams)
+        
+        let publicAddress = (torusKey.finalKeyData?.X ?? "") + (torusKey.finalKeyData?.Y ?? "")
+        let privateKey = torusKey.finalKeyData?.privKey ?? ""
 
-        let torusKey = TorusSFAKey(privateKey: privateKey, publicAddress: publicAddress)
-        _ = try await sessionManager.createSession(data: torusKey)
-        return torusKey
+        let torusSfaKey = TorusSFAKey(privateKey: privateKey, publicAddress: publicAddress)
+        _ = try await sessionManager.createSession(data: torusSfaKey)
+        return torusSfaKey
     }
 }

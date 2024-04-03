@@ -64,8 +64,8 @@ public class SingleFactorAuth {
             ] as [String: Codable]
 
             let verifierParams = VerifierParams(verifier_id: loginParams.verifierId)
-
-            let aggregateIdToken = String(String(bytes: aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256)).dropFirst(2)) // drop 0x
+            
+            let aggregateIdToken =  aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256).toHexString()  // drop 0x
 
             retrieveSharesResponse = try await torusUtils.retrieveShares(
                 endpoints: details.getTorusNodeEndpoints(),

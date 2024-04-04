@@ -14,7 +14,7 @@ final class SingleFactorAuthTests: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: TorusNetwork.legacy(.TESTNET))
+        singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: Web3AuthNetwork.TESTNET)
         singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
     }
 

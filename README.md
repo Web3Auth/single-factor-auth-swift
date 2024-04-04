@@ -7,42 +7,69 @@ Web3Auth Single Factor Auth is the SDK that gives you the ability to start with 
 
 ## 📖 Documentation
 
-Checkout the official [Web3Auth Documentation](https://web3auth.io/docs/sdk/web/core/) to get started.
+Checkout the official [Web3Auth Documentation](https://web3auth.io/docs/sdk/core-kit/sfa-ios) to get started.
 
 
 ## Features
 - Multi network support
 - All API's support async await 
 
+## 🔗 Installation
+You can install the SingleFactorAuth Swift using Swift Package Manager.
+
+```
+...
+dependencies: [
+    ...
+    .package(url: "https://github.com/Web3Auth/single-factor-auth-swift/", from: "4.0.0")
+],
+...
+```
+
 
 ## Getting Started
-- We support both Swift package manager and cocoapods
+Initialize the `SingleFactAuth` class by passing `SingleFactorAuthArgs`
 
-init the SingleFactAuth class by passing SingleFactorAuthArgs
-```
-        let singleFactorAuthArgs = SingleFactorAuthArgs(network: TorusNetwork.TESTNET)
-        let singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
-```
-Use the getKey function to login the user and get the privateKey and public address for the given user
-```
-            let idToken = try generateIdToken(email: TOURUS_TEST_EMAIL)
-        let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TOURUS_TEST_EMAIL, idToken: idToken)
-        let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
+```swift
+let singleFactorAuthArgs = SingleFactorAuthArgs(
+        web3AuthClientId: "<Your Client Id>",
+        network: Web3AuthNetwork.SAPPHIRE_MAINNET
+)
+let singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
 ```
 
-We also have included Session Management in this SDK so call initialize function to get TorusKey value without relogging in the user if a user has an active session it will return the TorusKey struct otherwise it will return nil
+Use the `getKey` function to login the user and get the privateKey and public address for the given user.
+
+```swift
+let idToken = try generateIdToken(email: TOURUS_TEST_EMAIL)
+let loginParams = LoginParams(
+        verifier: TEST_VERIFIER, 
+        verifierId: TOURUS_TEST_EMAIL, 
+        idToken: idToken
+)
+
+let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
 ```
-        if let savedKey = try await singleFactoreAuth.initialize() {
+
+We also have included Session Management in this SDK so call initialize function to get TorusKey value without relogging in the user if a user has an active session it will return the TorusKey struct otherwise it will return nil.
+
+```swift
+if let savedKey = try await singleFactoreAuth.initialize() {
         print(savedKey.getPrivateKey())
         print(savedKey.getPublicAddress())
-        }
+}
 ```
 
 ## Requirements
-- IOS 14 or above is required 
+- iOS 14 or above is required 
 
-## 💬 Troubleshooting and Discussions
+## Examples
 
-- Have a look at our [GitHub Discussions](https://github.com/Web3Auth/Web3Auth/discussions?discussions_q=sort%3Atop) to see if anyone has any questions or issues you might be having.
-- Checkout our [Troubleshooting Documentation Page](https://web3auth.io/docs/troubleshooting) to know the common issues and solutions
-- Join our [Discord](https://discord.gg/web3auth) to join our community and get private integration support or help with your integration.
+Checkout the examples for Single Factor Auth Swift in our [examples repository](https://github.com/Web3Auth/web3auth-core-kit-examples/tree/main/single-factor-auth-ios)
+
+
+## 💬 Troubleshooting and Support
+
+- Have a look at our [Community Portal](https://community.web3auth.io/) to see if anyone has any questions or issues you might be having. Feel free to reate new topics and we'll help you out as soon as possible.
+- Checkout our [Troubleshooting Documentation Page](https://web3auth.io/docs/troubleshooting) to know the common issues and solutions.
+- For Priority Support, please have a look at our [Pricing Page](https://web3auth.io/pricing.html) for the plan that suits your needs.

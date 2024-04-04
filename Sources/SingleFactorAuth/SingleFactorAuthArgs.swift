@@ -26,8 +26,8 @@ public class SingleFactorAuthArgs {
         return web3AuthClientId
     }
 
-    public func getNetwork() -> TorusNetwork {
-        return network.network
+    public func getNetwork() -> Web3AuthNetwork {
+        return network
     }
 
     public func getSignerUrl() -> String? {

@@ -13,12 +13,12 @@ public class SingleFactorAuth {
 
     public init(singleFactorAuthArgs: SingleFactorAuthArgs) {
         sessionManager = .init()
-        nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork())
+        nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork().network)
         torusUtils = TorusUtils(
             enableOneKey: true,
             signerHost: singleFactorAuthArgs.getSignerUrl()! + "/api/sign",
             allowHost: singleFactorAuthArgs.getSignerUrl()! + "/api/allow",
-            network: singleFactorAuthArgs.getNetwork(),
+            network: singleFactorAuthArgs.getNetwork().network,
             clientId: singleFactorAuthArgs.getWeb3AuthClientId()
         )
     }

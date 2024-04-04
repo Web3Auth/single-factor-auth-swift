@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "SingleFactorAuth",
     platforms: [
-        .iOS(.v14), .macOS(.v11)
+        .iOS(.v13), .macOS(.v11)
     ],
     products: [
 
@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/torusresearch/fetch-node-details-swift.git", from: "5.1.0"),
         .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from: "8.0.0"),
         .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0"),
-        .package(url: "https://github.com/Web3Auth/session-manager-swift.git", from: "3.1.0")
+        .package(url: "https://github.com/Web3Auth/session-manager-swift.git", from: "3.1.1")
     ],
     targets: [
         .target(

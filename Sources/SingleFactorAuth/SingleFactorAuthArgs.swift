@@ -50,41 +50,11 @@ public enum Web3AuthNetwork : Equatable, Hashable {
     case CUSTOM(path: String)
     
     public var path: String {
-        switch self {
-        case .SAPPHIRE_DEVNET:
-            return "sapphire_devnet"
-        case .SAPPHIRE_MAINNET:
-            return "sapphire_mainnet"
-        case .MAINNET:
-            return "mainnet"
-        case .TESTNET:
-            return "goerli"
-        case .CYAN, .AQUA, .CELESTE:
-            return "polygon-mainnet"
-        case let .CUSTOM(path):
-            return path
-        }
+        return self.network.path
     }
     
     public var name: String {
-        switch self {
-        case .SAPPHIRE_DEVNET:
-            return "sapphire_devnet"
-        case .SAPPHIRE_MAINNET:
-            return "sapphire_mainnet"
-        case .MAINNET:
-            return "mainnet"
-        case .TESTNET:
-            return "testnet"
-        case .CYAN :
-            return "cyan"
-        case .AQUA :
-            return "aqua"
-        case .CELESTE:
-            return "celeste"
-        case .CUSTOM(_):
-            return "custom"
-        }
+        return self.network.name
     }
     
     public var network: TorusNetwork {

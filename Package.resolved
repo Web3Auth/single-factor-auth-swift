@@ -19,21 +19,12 @@
       }
     },
     {
-      "identity" : "cryptoswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
-      "state" : {
-        "revision" : "7892a123f7e8d0fe62f9f03728b17bbd4f94df5c",
-        "version" : "1.8.1"
-      }
-    },
-    {
       "identity" : "curvelib.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/curvelib.swift",
       "state" : {
-        "revision" : "7dad3bf1793de263f83406c08c18c9316abf082f",
-        "version" : "0.1.2"
+        "revision" : "9f88bd5e56d1df443a908f7a7e81ae4f4d9170ea",
+        "version" : "1.0.1"
       }
     },
     {
@@ -41,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
       "state" : {
-        "revision" : "d591af500f32ce3c88d04af9bb74d746585acfea",
-        "version" : "5.1.0"
+        "revision" : "5f67cd080c26cf38ae91e7fe63e6217c6e401c07",
+        "version" : "6.0.2"
       }
     },
     {
@@ -68,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/session-manager-swift.git",
       "state" : {
-        "revision" : "290e36cd0646f7fb3be737b65bdfc9f5428dfd5c",
-        "version" : "3.1.0"
+        "revision" : "20cc7bff065d7fe53164d17e7714a3f17d4cea2a",
+        "version" : "4.0.2"
       }
     },
     {
@@ -86,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift",
       "state" : {
-        "revision" : "04c62fd5f73f21bd01b7c07e08f6135db26c5940",
-        "version" : "8.0.0"
+        "revision" : "ff85c3e96bfa29013309b487875c4d9383e4ac80",
+        "version" : "8.1.1"
       }
     }
   ],

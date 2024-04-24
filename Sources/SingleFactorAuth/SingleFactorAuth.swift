@@ -1,10 +1,10 @@
 import BigInt
 import Combine
-import CryptoSwift
 import FetchNodeDetails
 import Foundation
 import SessionManager
 import TorusUtils
+import curveSecp256k1
 
 public class SingleFactorAuth {
     let nodeDetailManager: NodeDetailManager
@@ -16,8 +16,6 @@ public class SingleFactorAuth {
         nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork().network)
         torusUtils = TorusUtils(
             enableOneKey: true,
-            signerHost: singleFactorAuthArgs.getSignerUrl()! + "/api/sign",
-            allowHost: singleFactorAuthArgs.getSignerUrl()! + "/api/allow",
             network: singleFactorAuthArgs.getNetwork().network,
             clientId: singleFactorAuthArgs.getWeb3AuthClientId()
         )
@@ -65,7 +63,7 @@ public class SingleFactorAuth {
 
             let verifierParams = VerifierParams(verifier_id: loginParams.verifierId)
             
-            let aggregateIdToken =  aggregateIdTokenSeeds.joined(separator: "\u{001d}").bytes.sha3(.keccak256).toHexString()  // drop 0x
+            let aggregateIdToken = try curveSecp256k1.keccak256(data: Data(aggregateIdTokenSeeds.joined(separator: "\u{001d}").utf8)).toHexString()
 
             retrieveSharesResponse = try await torusUtils.retrieveShares(
                 endpoints: details.getTorusNodeEndpoints(),

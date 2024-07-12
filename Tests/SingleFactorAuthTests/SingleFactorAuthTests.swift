@@ -23,7 +23,7 @@ final class SingleFactorAuthTests: XCTestCase {
         let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
         let requiredPrivateKey = "296045a5599afefda7afbdd1bf236358baff580a0fe2db62ae5c1bbe817fbae4"
         XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
-        XCTAssertEqual(torusKey.publicAddress, torusKey.getPublicAddress())
+        XCTAssertEqual("0x53010055542cCc0f2b6715a5c53838eC4aC96EF7", torusKey.getPublicAddress())
     }
 
     func testInitialise() async throws {
@@ -43,6 +43,6 @@ final class SingleFactorAuthTests: XCTestCase {
 
         let requiredPrivateKey = "ad47959db4cb2e63e641bac285df1b944f54d1a1cecdaeea40042b60d53c35d2"
         XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
-        XCTAssertEqual(torusKey.publicAddress, torusKey.getPublicAddress())
+        XCTAssertEqual("0xE1155dB406dAD89DdeE9FB9EfC29C8EedC2A0C8B", torusKey.getPublicAddress())
     }
 }

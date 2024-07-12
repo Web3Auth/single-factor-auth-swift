@@ -93,7 +93,7 @@ public class SingleFactorAuth {
     public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
         let torusKey = try await self.getTorusKey(loginParams: loginParams)
         
-        let publicAddress = (torusKey.finalKeyData?.X ?? "") + (torusKey.finalKeyData?.Y ?? "")
+        let publicAddress = torusKey.finalKeyData?.evmAddress ?? ""
         let privateKey = torusKey.finalKeyData?.privKey ?? ""
 
         let torusSfaKey = TorusSFAKey(privateKey: privateKey, publicAddress: publicAddress)

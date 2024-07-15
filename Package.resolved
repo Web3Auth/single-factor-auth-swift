@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "anycodable",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Flight-School/AnyCodable",
-      "state" : {
-        "revision" : "862808b2070cd908cb04f9aafe7de83d35f81b05",
-        "version" : "0.6.7"
-      }
-    },
-    {
       "identity" : "bigint",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/attaswift/BigInt",
@@ -75,10 +66,10 @@
     {
       "identity" : "torus-utils-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/torusresearch/torus-utils-swift",
+      "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "608c28404c506983bfec7bbd957632fc0544db8c",
-        "version" : "8.1.2"
+        "revision" : "303dc2cf41db7c10f769855edad0e717ced2d554",
+        "version" : "9.0.0"
       }
     }
   ],

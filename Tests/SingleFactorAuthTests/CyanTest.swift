@@ -14,7 +14,7 @@ final class CyanTest: XCTestCase {
 
     override func setUp() {
         singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: Web3AuthNetwork.CYAN)
-        singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
+        singleFactoreAuth = try! SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
     }
 
     func testGetTorusKey() async throws {

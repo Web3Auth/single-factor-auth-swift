@@ -14,7 +14,7 @@ final class SingleFactorAuthTests: XCTestCase {
 
     override func setUp() {
         singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: Web3AuthNetwork.TESTNET)
-        singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
+        singleFactoreAuth = try! SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
     }
 
     func testGetTorusKey() async throws {

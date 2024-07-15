@@ -14,7 +14,7 @@ final class AquaTest: XCTestCase {
 
     override func setUp() {
         singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: Web3AuthNetwork.AQUA)
-        singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
+        singleFactoreAuth = try! SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
     }
 
     func testGetTorusKey() async throws {

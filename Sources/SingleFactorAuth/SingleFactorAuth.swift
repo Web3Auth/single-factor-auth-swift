@@ -4,7 +4,9 @@ import FetchNodeDetails
 import Foundation
 import SessionManager
 import TorusUtils
-import curveSecp256k1
+#if canImport(curveSecp256k1)
+    import curveSecp256k1
+#endif
 
 public class SingleFactorAuth {
     let nodeDetailManager: NodeDetailManager
@@ -13,9 +15,9 @@ public class SingleFactorAuth {
 
     public init(singleFactorAuthArgs: SingleFactorAuthArgs) throws {
         sessionManager = .init()
-        nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork().network)
-        let torusOptions = TorusOptions(clientId: singleFactorAuthArgs.getWeb3AuthClientId(), network: singleFactorAuthArgs.getNetwork().network, enableOneKey: true)
-        try torusUtils = TorusUtils( params: torusOptions)
+        nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork())
+        let torusOptions = TorusOptions(clientId: singleFactorAuthArgs.getWeb3AuthClientId(), network: singleFactorAuthArgs.getNetwork(), enableOneKey: true)
+        try torusUtils = TorusUtils(params: torusOptions)
     }
 
     public func initialize() async throws -> TorusSFAKey {
@@ -51,7 +53,7 @@ public class SingleFactorAuth {
             aggregateIdTokenSeeds.sort()
 
             let verifierParams = VerifierParams(verifier_id: loginParams.verifierId, sub_verifier_ids: subVerifierIds, verify_params: verifyParams)
-            
+
             let aggregateIdToken = try curveSecp256k1.keccak256(data: Data(aggregateIdTokenSeeds.joined(separator: "\u{001d}").utf8)).toHexString()
 
             retrieveSharesResponse = try await torusUtils.retrieveShares(
@@ -73,10 +75,10 @@ public class SingleFactorAuth {
 
         return retrieveSharesResponse
     }
-    
+
     public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
-        let torusKey = try await self.getTorusKey(loginParams: loginParams)
-        
+        let torusKey = try await getTorusKey(loginParams: loginParams)
+
         let publicAddress = torusKey.finalKeyData.evmAddress
         let privateKey = torusKey.finalKeyData.privKey
 

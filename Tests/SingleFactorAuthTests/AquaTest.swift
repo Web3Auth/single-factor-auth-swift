@@ -1,6 +1,7 @@
 import BigInt
 import JWTKit
 import XCTest
+import FetchNodeDetails
 
 @testable import SingleFactorAuth
 
@@ -13,8 +14,8 @@ final class AquaTest: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: Web3AuthNetwork.AQUA)
-        singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
+        singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: .legacy(.AQUA))
+        singleFactoreAuth = try! SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
     }
 
     func testGetTorusKey() async throws {

@@ -13,8 +13,8 @@ final class CyanTest: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: Web3AuthNetwork.CYAN)
-        singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
+        singleFactorAuthArgs = SingleFactorAuthArgs(web3AuthClientId: "CLIENT ID", network: .legacy(.CYAN))
+        singleFactoreAuth = try! SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
     }
 
     func testGetTorusKey() async throws {

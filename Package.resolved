@@ -32,7 +32,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift.git",
       "state" : {
-        "revision" : "5f67cd080c26cf38ae91e7fe63e6217c6e401c07",
+        "revision" : "22bfadf7491d77a0bc1953af002cadbd61383e7d",
         "version" : "6.0.2"
       }
     },
@@ -75,10 +75,10 @@
     {
       "identity" : "torus-utils-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/torusresearch/torus-utils-swift",
+      "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "revision" : "ff85c3e96bfa29013309b487875c4d9383e4ac80",
-        "version" : "8.1.1"
+        "branch" : "fix/racing",
+        "revision" : "608c28404c506983bfec7bbd957632fc0544db8c"
       }
     }
   ],

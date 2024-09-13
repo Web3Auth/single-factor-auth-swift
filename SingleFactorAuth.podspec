@@ -12,6 +12,6 @@ Pod::Spec.new do |spec|
   spec.source_files = "Sources/SingleFactorAuth/*.{swift,json}","Sources/SingleFactorAuth/**/*.{swift,json}"
   spec.dependency 'Torus-fetchNodeDetails', '~> 6.0.3'
   spec.dependency 'curvelib.swift', '~> 1.0.1'
-  spec.dependency 'Torus-utils', '~> 9.0.0'
-  spec.dependency 'TorusSessionManager', '~> 4.0.2'
+  spec.dependency 'Torus-utils', '~> 9.0.1'
+  spec.dependency 'TorusSessionManager', '~> 4.1.0'
 end

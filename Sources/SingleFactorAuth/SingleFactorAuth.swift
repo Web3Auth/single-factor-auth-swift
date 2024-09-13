@@ -13,7 +13,7 @@ public class SingleFactorAuth {
     let torusUtils: TorusUtils
     private var sessionManager: SessionManager
 
-    public init(singleFactorAuthArgs: SingleFactorAuthArgs) throws {
+    public init(singleFactorAuthArgs: SFAParams) throws {
         sessionManager = .init()
         nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork())
         let torusOptions = TorusOptions(clientId: singleFactorAuthArgs.getWeb3AuthClientId(), network: singleFactorAuthArgs.getNetwork(), enableOneKey: true)
@@ -21,10 +21,17 @@ public class SingleFactorAuth {
     }
 
     public func initialize() async throws -> TorusSFAKey {
-        let data = try await sessionManager.authorizeSession()
+        let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
         guard let privKey = data["privateKey"] as? String,
               let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
         return .init(privateKey: privKey, publicAddress: publicAddress)
+    }
+    
+    public func isSessionIdExists() -> Bool {
+        if (sessionManager.getSessionID() != nil) && !(sessionManager.getSessionID()!.isEmpty) {
+            return true
+        }
+        return false
     }
 
     public func getTorusKey(loginParams: LoginParams) async throws -> TorusKey {
@@ -76,7 +83,7 @@ public class SingleFactorAuth {
         return retrieveSharesResponse
     }
 
-    public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
+    public func connect(loginParams: LoginParams) async throws -> TorusSFAKey {
         let torusKey = try await getTorusKey(loginParams: loginParams)
 
         let publicAddress = torusKey.finalKeyData.evmAddress

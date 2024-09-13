@@ -28,14 +28,14 @@ dependencies: [
 
 
 ## Getting Started
-Initialize the `SingleFactAuth` class by passing `SingleFactorAuthArgs`
+Initialize the `SingleFactAuth` class by passing `SFAParams`
 
 ```swift
 let singleFactorAuthArgs = SingleFactorAuthArgs(
         web3AuthClientId: "<Your Client Id>",
         network: Web3AuthNetwork.SAPPHIRE_MAINNET
 )
-let singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
+let singleFactoreAuth = SingleFactorAuth(params: SFAParams)
 ```
 
 Use the `getKey` function to login the user and get the privateKey and public address for the given user.
@@ -48,7 +48,7 @@ let loginParams = LoginParams(
         idToken: idToken
 )
 
-let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
+let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
 ```
 
 We also have included Session Management in this SDK so call initialize function to get TorusKey value without relogging in the user if a user has an active session it will return the TorusKey struct otherwise it will return nil.

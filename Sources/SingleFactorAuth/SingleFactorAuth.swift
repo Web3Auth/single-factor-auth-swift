@@ -20,7 +20,7 @@ public class SingleFactorAuth {
         try torusUtils = TorusUtils(params: torusOptions)
     }
 
-    public func initialize() async throws -> TorusSFAKey {
+    public func initialize() async throws -> SFAKey {
         let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
         guard let privKey = data["privateKey"] as? String,
               let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
@@ -83,14 +83,14 @@ public class SingleFactorAuth {
         return retrieveSharesResponse
     }
 
-    public func connect(loginParams: LoginParams) async throws -> TorusSFAKey {
+    public func connect(loginParams: LoginParams) async throws -> SFAKey {
         let torusKey = try await getTorusKey(loginParams: loginParams)
 
         let publicAddress = torusKey.finalKeyData.evmAddress
         let privateKey = torusKey.finalKeyData.privKey
 
-        let torusSfaKey = TorusSFAKey(privateKey: privateKey, publicAddress: publicAddress)
-        _ = try await sessionManager.createSession(data: torusSfaKey)
-        return torusSfaKey
+        let sfaKey = SFAKey(privateKey: privateKey, publicAddress: publicAddress)
+        _ = try await sessionManager.createSession(data: sfaKey)
+        return sfaKey
     }
 }

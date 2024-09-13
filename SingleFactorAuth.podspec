@@ -13,5 +13,5 @@ Pod::Spec.new do |spec|
   spec.dependency 'Torus-fetchNodeDetails', '~> 6.0.3'
   spec.dependency 'curvelib.swift', '~> 1.0.1'
   spec.dependency 'Torus-utils', '~> 9.0.1'
-  spec.dependency 'TorusSessionManager', '~> 4.1.0'
+  spec.dependency 'TorusSessionManager', '~> 5.0.0'
 end

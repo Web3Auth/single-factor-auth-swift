@@ -41,10 +41,10 @@ let singleFactoreAuth = SingleFactorAuth(params: SFAParams)
 Use the `getKey` function to login the user and get the privateKey and public address for the given user.
 
 ```swift
-let idToken = try generateIdToken(email: TOURUS_TEST_EMAIL)
+let idToken = try generateIdToken(email: TORUS_TEST_EMAIL)
 let loginParams = LoginParams(
         verifier: TEST_VERIFIER, 
-        verifierId: TOURUS_TEST_EMAIL, 
+        verifierId: TORUS_TEST_EMAIL, 
         idToken: idToken
 )
 

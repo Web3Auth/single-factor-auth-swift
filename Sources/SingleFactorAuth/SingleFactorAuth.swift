@@ -13,8 +13,8 @@ public class SingleFactorAuth {
     let torusUtils: TorusUtils
     private var sessionManager: SessionManager
 
-    public init(singleFactorAuthArgs: SFAParams) throws {
-        sessionManager = .init()
+    public init(singleFactorAuthArgs: SFAParams, sessionTime: Int) throws {
+        sessionManager = SessionManager(sessionTime: sessionTime)
         nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork())
         let torusOptions = TorusOptions(clientId: singleFactorAuthArgs.getWeb3AuthClientId(), network: singleFactorAuthArgs.getNetwork(), enableOneKey: true)
         try torusUtils = TorusUtils(params: torusOptions)

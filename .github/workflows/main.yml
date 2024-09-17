@@ -28,4 +28,4 @@ jobs:
         with:
           xcode-version: latest-stable
       - name: package
-        run: xcodebuild test -scheme SingleFactorAuth -destination "platform=iOS Simulator,OS=16.2,name=iPhone 14" COMPILER_INDEX_STORE_ENABLE=NO
+        run: xcodebuild test -scheme SingleFactorAuth -destination "platform=iOS Simulator,OS=17.5,name=iPhone 14" COMPILER_INDEX_STORE_ENABLE=NO

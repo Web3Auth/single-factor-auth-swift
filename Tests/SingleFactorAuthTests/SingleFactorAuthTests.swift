@@ -14,7 +14,7 @@ final class SingleFactorAuthTests: XCTestCase {
 
     override func setUp() {
         singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .legacy(.TESTNET))
-        singleFactoreAuth = try! SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
+        singleFactoreAuth = try! SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs, sessionTime: 86400)
     }
 
     func testConnect() async throws {

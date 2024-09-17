@@ -14,7 +14,7 @@ final class CyanTest: XCTestCase {
 
     override func setUp() {
         singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .legacy(.CYAN))
-        singleFactoreAuth = try! SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs, sessionTime: 86400)
+        singleFactoreAuth = try! SingleFactorAuth(params: singleFactorAuthArgs)
     }
 
     func testConnect() async throws {

@@ -12,6 +12,7 @@ struct TestPayload: JWTPayload, Equatable {
         case iat
         case email
         case audience = "aud"
+        case name
     }
 
     var subject: SubjectClaim
@@ -22,12 +23,14 @@ struct TestPayload: JWTPayload, Equatable {
     var issuer: IssuerClaim
     var iat: IssuedAtClaim
     var email: String
+    var name: String
 
     // call its verify method.
     func verify(using signer: JWTSigner) throws {
         try expiration.verifyNotExpired()
     }
 }
+
 
 func generateRandomEmail(of length: Int) -> String {
     let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -53,12 +56,21 @@ func generateIdToken(email: String) throws -> String {
 
         // Parses the JWT and verifies its signature.
         let today = Date()
-        let modifiedDate = Calendar.current.date(byAdding: .hour, value: 1, to: today)!
+        let modifiedDate = Calendar.current.date(byAdding: .minute, value: 2, to: today)!
 
         let emailComponent = email.components(separatedBy: "@")[0]
         let subject = "email|" + emailComponent
 
-        let payload = TestPayload(subject: SubjectClaim(stringLiteral: subject), expiration: ExpirationClaim(value: modifiedDate), audience: "torus-key-test", isAdmin: false, emailVerified: true, issuer: "torus-key-test", iat: IssuedAtClaim(value: Date()), email: email)
+        let payload = TestPayload(
+            subject: SubjectClaim(stringLiteral: subject),
+            expiration: ExpirationClaim(value: modifiedDate), // eat
+            audience: "torus-key-test",
+            isAdmin: false,
+            emailVerified: true,
+            issuer: "torus-key-test",
+            iat: IssuedAtClaim(value: today),
+            email: email,
+            name: email)
         let jwt = try signers.sign(payload)
         return jwt
     } catch {

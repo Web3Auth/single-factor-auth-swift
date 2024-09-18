@@ -21,34 +21,34 @@ You can install the SingleFactorAuth Swift using Swift Package Manager.
 ...
 dependencies: [
     ...
-    .package(url: "https://github.com/Web3Auth/single-factor-auth-swift/", from: "4.0.0")
+    .package(url: "https://github.com/Web3Auth/single-factor-auth-swift/", from: "8.0.0")
 ],
 ...
 ```
 
 
 ## Getting Started
-Initialize the `SingleFactAuth` class by passing `SingleFactorAuthArgs`
+Initialize the `SingleFactAuth` class by passing `SFAParams`
 
 ```swift
 let singleFactorAuthArgs = SingleFactorAuthArgs(
         web3AuthClientId: "<Your Client Id>",
         network: Web3AuthNetwork.SAPPHIRE_MAINNET
 )
-let singleFactoreAuth = SingleFactorAuth(singleFactorAuthArgs: singleFactorAuthArgs)
+let singleFactoreAuth = SingleFactorAuth(params: SFAParams)
 ```
 
 Use the `getKey` function to login the user and get the privateKey and public address for the given user.
 
 ```swift
-let idToken = try generateIdToken(email: TOURUS_TEST_EMAIL)
+let idToken = try generateIdToken(email: TORUS_TEST_EMAIL)
 let loginParams = LoginParams(
         verifier: TEST_VERIFIER, 
-        verifierId: TOURUS_TEST_EMAIL, 
+        verifierId: TORUS_TEST_EMAIL, 
         idToken: idToken
 )
 
-let torusKey = try await singleFactoreAuth.getKey(loginParams: loginParams)
+let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
 ```
 
 We also have included Session Management in this SDK so call initialize function to get TorusKey value without relogging in the user if a user has an active session it will return the TorusKey struct otherwise it will return nil.

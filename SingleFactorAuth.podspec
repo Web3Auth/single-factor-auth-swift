@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = "SingleFactorAuth"
-  spec.version      = "7.0.0"
+  spec.version      = "8.0.0"
   spec.ios.deployment_target  = "14.0"
   spec.summary      = "Enable one key flow for Web3Auth"
   spec.homepage     = "https://github.com/Web3Auth/single-factor-auth-swift"
@@ -12,6 +12,6 @@ Pod::Spec.new do |spec|
   spec.source_files = "Sources/SingleFactorAuth/*.{swift,json}","Sources/SingleFactorAuth/**/*.{swift,json}"
   spec.dependency 'Torus-fetchNodeDetails', '~> 6.0.3'
   spec.dependency 'curvelib.swift', '~> 1.0.1'
-  spec.dependency 'Torus-utils', '~> 9.0.0'
-  spec.dependency 'TorusSessionManager', '~> 4.0.2'
+  spec.dependency 'Torus-utils', '~> 9.0.1'
+  spec.dependency 'TorusSessionManager', '~> 5.0.0'
 end

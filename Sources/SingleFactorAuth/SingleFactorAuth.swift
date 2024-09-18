@@ -13,18 +13,25 @@ public class SingleFactorAuth {
     let torusUtils: TorusUtils
     private var sessionManager: SessionManager
 
-    public init(singleFactorAuthArgs: SingleFactorAuthArgs) throws {
-        sessionManager = .init()
-        nodeDetailManager = NodeDetailManager(network: singleFactorAuthArgs.getNetwork())
-        let torusOptions = TorusOptions(clientId: singleFactorAuthArgs.getWeb3AuthClientId(), network: singleFactorAuthArgs.getNetwork(), enableOneKey: true)
+    public init(params: SFAParams) throws {
+        sessionManager = SessionManager(sessionTime: params.getSessionTime(), allowedOrigin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
+        nodeDetailManager = NodeDetailManager(network: params.getNetwork())
+        let torusOptions = TorusOptions(clientId: params.getWeb3AuthClientId(), network: params.getNetwork(), enableOneKey: true)
         try torusUtils = TorusUtils(params: torusOptions)
     }
 
-    public func initialize() async throws -> TorusSFAKey {
-        let data = try await sessionManager.authorizeSession()
+    public func initialize() async throws -> SFAKey {
+        let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
         guard let privKey = data["privateKey"] as? String,
               let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
         return .init(privateKey: privKey, publicAddress: publicAddress)
+    }
+    
+    public func isSessionIdExists() -> Bool {
+        if (sessionManager.getSessionID() != nil) && !(sessionManager.getSessionID()!.isEmpty) {
+            return true
+        }
+        return false
     }
 
     public func getTorusKey(loginParams: LoginParams) async throws -> TorusKey {
@@ -76,14 +83,14 @@ public class SingleFactorAuth {
         return retrieveSharesResponse
     }
 
-    public func getKey(loginParams: LoginParams) async throws -> TorusSFAKey {
+    public func connect(loginParams: LoginParams) async throws -> SFAKey {
         let torusKey = try await getTorusKey(loginParams: loginParams)
 
         let publicAddress = torusKey.finalKeyData.evmAddress
         let privateKey = torusKey.finalKeyData.privKey
 
-        let torusSfaKey = TorusSFAKey(privateKey: privateKey, publicAddress: publicAddress)
-        _ = try await sessionManager.createSession(data: torusSfaKey)
-        return torusSfaKey
+        let sfaKey = SFAKey(privateKey: privateKey, publicAddress: publicAddress)
+        _ = try await sessionManager.createSession(data: sfaKey)
+        return sfaKey
     }
 }

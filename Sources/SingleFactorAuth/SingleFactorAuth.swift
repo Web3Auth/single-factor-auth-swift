@@ -27,8 +27,9 @@ public class SingleFactorAuth {
         return .init(privateKey: privKey, publicAddress: publicAddress)
     }
     
-    public func isSessionIdExists() -> Bool {
-        if (sessionManager.getSessionID() != nil) && !(sessionManager.getSessionID()!.isEmpty) {
+    public func isSessionIdExists() async throws -> Bool {
+        let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
+        if(data["privateKey"] as? String != nil && (sessionManager.getSessionID() != nil) && !(sessionManager.getSessionID()!.isEmpty)) {
             return true
         }
         return false
@@ -92,5 +93,10 @@ public class SingleFactorAuth {
         let sfaKey = SFAKey(privateKey: privateKey, publicAddress: publicAddress)
         _ = try await sessionManager.createSession(data: sfaKey)
         return sfaKey
+    }
+    
+    public func logout() async throws -> Bool {
+        let logoutResult = try await sessionManager.invalidateSession()
+        return logoutResult
     }
 }

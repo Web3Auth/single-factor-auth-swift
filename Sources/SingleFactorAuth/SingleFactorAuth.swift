@@ -26,14 +26,6 @@ public class SingleFactorAuth {
               let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
         return .init(privateKey: privKey, publicAddress: publicAddress)
     }
-    
-    public func isSessionIdExists() async throws -> Bool {
-        let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
-        if(data["privateKey"] as? String != nil && (sessionManager.getSessionID() != nil) && !(sessionManager.getSessionID()!.isEmpty)) {
-            return true
-        }
-        return false
-    }
 
     public func getTorusKey(loginParams: LoginParams) async throws -> TorusKey {
         var retrieveSharesResponse: TorusKey

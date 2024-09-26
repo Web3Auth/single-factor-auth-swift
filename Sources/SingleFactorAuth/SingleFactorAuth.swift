@@ -26,13 +26,6 @@ public class SingleFactorAuth {
               let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
         return .init(privateKey: privKey, publicAddress: publicAddress)
     }
-    
-    public func isSessionIdExists() -> Bool {
-        if (sessionManager.getSessionID() != nil) && !(sessionManager.getSessionID()!.isEmpty) {
-            return true
-        }
-        return false
-    }
 
     public func getTorusKey(loginParams: LoginParams) async throws -> TorusKey {
         var retrieveSharesResponse: TorusKey
@@ -90,7 +83,13 @@ public class SingleFactorAuth {
         let privateKey = torusKey.finalKeyData.privKey
 
         let sfaKey = SFAKey(privateKey: privateKey, publicAddress: publicAddress)
-        _ = try await sessionManager.createSession(data: sfaKey)
+        let sessionId = try await sessionManager.createSession(data: sfaKey)
+        sessionManager.saveSessionId(sessionId)
         return sfaKey
+    }
+    
+    public func logout() async throws -> Bool {
+        let logoutResult = try await sessionManager.invalidateSession()
+        return logoutResult
     }
 }

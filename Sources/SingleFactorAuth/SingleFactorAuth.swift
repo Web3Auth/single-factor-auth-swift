@@ -83,7 +83,8 @@ public class SingleFactorAuth {
         let privateKey = torusKey.finalKeyData.privKey
 
         let sfaKey = SFAKey(privateKey: privateKey, publicAddress: publicAddress)
-        _ = try await sessionManager.createSession(data: sfaKey)
+        let sessionId = try await sessionManager.createSession(data: sfaKey)
+        sessionManager.saveSessionId(sessionId)
         return sfaKey
     }
     

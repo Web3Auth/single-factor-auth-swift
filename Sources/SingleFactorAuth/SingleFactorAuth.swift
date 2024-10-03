@@ -42,7 +42,7 @@ public class SingleFactorAuth {
         let userDetails = try await torusUtils.getUserTypeAndAddress(endpoints: details.getTorusNodeEndpoints(), verifier: loginParams.verifier, verifierId: loginParams.verifierId)
 
         if userDetails.metadata?.upgraded == true {
-            throw "User already has enabled MFA"
+            throw SFAError.MFAAlreadyEnabled
         }
 
         if let subVerifierInfoArray = loginParams.subVerifierInfoArray, !subVerifierInfoArray.isEmpty {

@@ -1,9 +1,7 @@
 import FetchNodeDetails
 
-public typealias Web3AuthNetwork = TorusNetwork
-
 public class SFAParams{
-    private var network: TorusNetwork
+    private var network: Web3AuthNetwork
     private var networkUrl: String
     private var web3AuthClientId: String
     private var sessionTime: Int

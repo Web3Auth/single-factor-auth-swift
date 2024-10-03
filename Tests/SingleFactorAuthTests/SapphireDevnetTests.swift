@@ -13,7 +13,7 @@ final class SapphireDevnetTests: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .sapphire(.SAPPHIRE_DEVNET))
+        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .SAPPHIRE_DEVNET)
         singleFactoreAuth = try! SingleFactorAuth(params: singleFactorAuthArgs)
     }
 

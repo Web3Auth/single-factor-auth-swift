@@ -12,7 +12,7 @@ final class CyanTest: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .legacy(.CYAN))
+        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .CYAN)
         singleFactoreAuth = try! SingleFactorAuth(params: singleFactorAuthArgs)
     }
 

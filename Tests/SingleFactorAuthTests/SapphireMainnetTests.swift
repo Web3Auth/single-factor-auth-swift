@@ -13,7 +13,7 @@ final class SapphireMainnetTests: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-aggregate-sapphire-mainnet"
 
     override func setUp() {
-        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .sapphire(.SAPPHIRE_MAINNET))
+        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .SAPPHIRE_MAINNET)
         singleFactoreAuth = try! SingleFactorAuth(params: singleFactorAuthArgs)
     }
 

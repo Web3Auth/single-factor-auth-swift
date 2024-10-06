@@ -13,7 +13,7 @@ final class AquaTest: XCTestCase {
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .legacy(.AQUA))
+        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .AQUA)
         singleFactoreAuth = try! SingleFactorAuth(params: singleFactorAuthArgs)
     }
 

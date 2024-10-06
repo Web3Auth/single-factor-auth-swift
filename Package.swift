@@ -15,8 +15,7 @@ let package = Package(
             targets: ["SingleFactorAuth"])
     ],
     dependencies: [
-        .package(url: "https://github.com/torusresearch/fetch-node-details-swift.git", from: "6.0.3"),
-        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from: "9.0.1"),
+        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", branch: "encapsulate_torusnetwork"),
         .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0"),
         .package(url: "https://github.com/Web3Auth/session-manager-swift.git", from: "5.0.0"),
     ],
@@ -24,7 +23,6 @@ let package = Package(
         .target(
             name: "SingleFactorAuth",
             dependencies: [
-                .product(name: "FetchNodeDetails", package: "fetch-node-details-swift"),
                 .product(name: "TorusUtils", package: "torus-utils-swift"),
                 .product(name: "SessionManager", package: "session-manager-swift")
             ]),

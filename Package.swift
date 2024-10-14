@@ -15,7 +15,7 @@ let package = Package(
             targets: ["SingleFactorAuth"])
     ],
     dependencies: [
-        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", branch: "encapsulate_torusnetwork"),
+        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", branch: "remove_celeste_support"),
         .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0"),
         .package(url: "https://github.com/Web3Auth/session-manager-swift.git", from: "5.0.0"),
     ],

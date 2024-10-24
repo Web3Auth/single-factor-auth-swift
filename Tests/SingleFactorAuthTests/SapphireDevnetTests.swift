@@ -1,8 +1,8 @@
 import BigInt
-import JWTKit
-import XCTest
 import FetchNodeDetails
+import JWTKit
 import SingleFactorAuth
+import XCTest
 
 final class SapphireDevnetTests: XCTestCase {
     var singleFactoreAuth: SingleFactorAuth!
@@ -30,8 +30,8 @@ final class SapphireDevnetTests: XCTestCase {
     func testInitialise() async throws {
         let idToken = try generateIdToken(email: TORUS_TEST_EMAIL)
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TORUS_TEST_EMAIL, idToken: idToken)
-        let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
-       try await singleFactoreAuth.initialize()
+        let _ = try await singleFactoreAuth.connect(loginParams: loginParams)
+        try await singleFactoreAuth.initialize()
     }
 
     func testAggregrateGetTorusKey() async throws {

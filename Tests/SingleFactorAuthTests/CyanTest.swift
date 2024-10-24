@@ -5,14 +5,14 @@ import SingleFactorAuth
 
 final class CyanTest: XCTestCase {
     var singleFactoreAuth: SingleFactorAuth!
-    var singleFactorAuthArgs: SFAParams!
+    var singleFactorAuthArgs: Web3AuthOptions!
 
     let TORUS_TEST_EMAIL = "hello@tor.us"
     let TEST_VERIFIER = "torus-test-health"
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .CYAN)
+        singleFactorAuthArgs = Web3AuthOptions(clientId: "CLIENT ID", web3AuthNetwork: .CYAN)
         singleFactoreAuth = try! SingleFactorAuth(params: singleFactorAuthArgs)
     }
 
@@ -31,9 +31,9 @@ final class CyanTest: XCTestCase {
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TORUS_TEST_EMAIL, idToken: idToken)
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
         let requiredPrivateKey = "223d982054fa1ad27d1497560521e4cce5b8c6438c38533c7bad27ff21ce0546"
-        let savedKey = try await singleFactoreAuth.initialize()
-        XCTAssertEqual(requiredPrivateKey, savedKey.getPrivateKey())
-        XCTAssertEqual(torusKey.getPublicAddress(), savedKey.getPublicAddress())
+        try await singleFactoreAuth.initialize()
+        XCTAssertEqual(requiredPrivateKey, singleFactoreAuth.getSessionData()!.getPrivateKey())
+        XCTAssertEqual(torusKey.getPublicAddress(), singleFactoreAuth.getSessionData()!.getPublicAddress())
     }
 
     func testAggregrateGetTorusKey() async throws {

@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tkey/curvelib.swift",
       "state" : {
-        "revision" : "9f88bd5e56d1df443a908f7a7e81ae4f4d9170ea",
-        "version" : "1.0.1"
+        "revision" : "432bf1abe7ff505fc2ac9fcf697341ff5b2dc6d0",
+        "version" : "2.0.0"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/fetch-node-details-swift",
       "state" : {
-        "branch" : "encapsulate_torusnetwork",
-        "revision" : "2fcd108ea89a48f092a955017977a299129d20c7"
+        "revision" : "52fb5efaa94e0fe3775913ab00964bcb51601c2a",
+        "version" : "8.0.0"
       }
     },
     {
@@ -34,6 +34,15 @@
       "state" : {
         "revision" : "e05513b5aec24f88012b6e3034115b6bc915356a",
         "version" : "4.13.2"
+      }
+    },
+    {
+      "identity" : "jwtdecode.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/auth0/JWTDecode.swift",
+      "state" : {
+        "revision" : "1e153ef009969543191970c66b7c60163c0b4a65",
+        "version" : "3.2.0"
       }
     },
     {
@@ -50,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/session-manager-swift.git",
       "state" : {
-        "revision" : "67d5f7db655d02778861057fb280ecf47c923b09",
-        "version" : "5.0.0"
+        "revision" : "90afccc0e5e2ea8d671cdacb26899f60740b4e0b",
+        "version" : "6.0.0"
       }
     },
     {
@@ -68,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/torusresearch/torus-utils-swift.git",
       "state" : {
-        "branch" : "encapsulate_torusnetwork",
-        "revision" : "4d01a8d07cfbde3c23b468d1f234a4a73b0ca200"
+        "revision" : "baa822fc67bdb208ed1a2dc5b3c10485cfca15df",
+        "version" : "10.0.0"
       }
     }
   ],

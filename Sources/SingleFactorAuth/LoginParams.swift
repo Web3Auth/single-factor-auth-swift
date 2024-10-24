@@ -3,19 +3,16 @@ public class LoginParams {
     public let verifierId: String
     public let idToken: String
     public let subVerifierInfoArray: [TorusSubVerifierInfo]?
+    public let serverTimeOffset: Int?
+    public let fallbackUserInfo: UserInfo?
 
-    public init(verifier: String, verifierId: String, idToken: String) {
-        self.verifier = verifier
-        self.verifierId = verifierId
-        self.idToken = idToken
-        subVerifierInfoArray = nil
-    }
-
-    public init(verifier: String, verifierId: String, idToken: String, subVerifierInfoArray: [TorusSubVerifierInfo]) {
+    public init(verifier: String, verifierId: String, idToken: String, subVerifierInfoArray: [TorusSubVerifierInfo]? = nil, serverTimeOffset: Int? = nil, fallbackUserInfo: UserInfo? = nil) {
         self.verifier = verifier
         self.verifierId = verifierId
         self.idToken = idToken
         self.subVerifierInfoArray = subVerifierInfoArray
+        self.serverTimeOffset = serverTimeOffset
+        self.fallbackUserInfo = fallbackUserInfo
     }
 }
 

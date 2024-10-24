@@ -5,14 +5,14 @@ import SingleFactorAuth
 
 final class SingleFactorAuthTests: XCTestCase {
     var singleFactoreAuth: SingleFactorAuth!
-    var singleFactorAuthArgs: SFAParams!
+    var singleFactorAuthArgs: Web3AuthOptions!
 
     let TORUS_TEST_EMAIL = "hello@tor.us"
     let TEST_VERIFIER = "torus-test-health"
     let TEST_AGGREGRATE_VERIFIER = "torus-test-health-aggregate"
 
     override func setUp() {
-        singleFactorAuthArgs = SFAParams(web3AuthClientId: "CLIENT ID", network: .legacy(.TESTNET))
+        singleFactorAuthArgs = Web3AuthOptions(clientId: "CLIENT ID", web3AuthNetwork: .TESTNET)
         singleFactoreAuth = try! SingleFactorAuth(params: singleFactorAuthArgs)
     }
 
@@ -29,10 +29,10 @@ final class SingleFactorAuthTests: XCTestCase {
         let idToken = try generateIdToken(email: TORUS_TEST_EMAIL)
         let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TORUS_TEST_EMAIL, idToken: idToken)
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
-        let savedKey = try await singleFactoreAuth.initialize()
+        try await singleFactoreAuth.initialize()
         let requiredPrivateKey = "296045a5599afefda7afbdd1bf236358baff580a0fe2db62ae5c1bbe817fbae4"
-        XCTAssertEqual(requiredPrivateKey, savedKey.getPrivateKey())
-        XCTAssertEqual(torusKey.getPublicAddress(), savedKey.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, singleFactoreAuth.getSessionData()!.getPrivateKey())
+        XCTAssertEqual(torusKey.getPublicAddress(), singleFactoreAuth.getSessionData()!.getPublicAddress())
     }
 
     func testAggregrateGetTorusKey() async throws {

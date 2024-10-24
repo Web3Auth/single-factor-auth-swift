@@ -4,6 +4,7 @@ import FetchNodeDetails
 import Foundation
 import SessionManager
 import TorusUtils
+import JWTDecode
 #if canImport(curveSecp256k1)
     import curveSecp256k1
 #endif
@@ -12,39 +13,49 @@ public class SingleFactorAuth {
     let nodeDetailManager: NodeDetailManager
     let torusUtils: TorusUtils
     private var sessionManager: SessionManager
+    private var state: SessionData?
 
-    public init(params: SFAParams) throws {
-        sessionManager = SessionManager(sessionTime: params.getSessionTime(), allowedOrigin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
+    public init(params: Web3AuthOptions) throws {
+        sessionManager = SessionManager(sessionServerBaseUrl: params.getStorageServerUrl(), sessionTime: params.getSessionTime(), allowedOrigin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
         nodeDetailManager = NodeDetailManager(network: params.getNetwork())
-        let torusOptions = TorusOptions(clientId: params.getWeb3AuthClientId(), network: params.getNetwork(), enableOneKey: true)
+        let torusOptions = TorusOptions(clientId: params.getClientId(), network: params.getNetwork(), serverTimeOffset: params.getServerTimeOffset(), enableOneKey: true)
         try torusUtils = TorusUtils(params: torusOptions)
     }
 
-    public func initialize() async throws -> SFAKey {
-        let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
-        guard let privKey = data["privateKey"] as? String,
-              let publicAddress = data["publicAddress"] as? String else { throw SessionManagerError.decodingError }
-        return .init(privateKey: privKey, publicAddress: publicAddress)
+    public func initialize() async throws {
+        let savedSessionId = SessionManager.getSessionIdFromStorage()
+        
+        if savedSessionId != nil && !savedSessionId!.isEmpty {
+            sessionManager.setSessionId(sessionId: savedSessionId!)
+            
+            let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
+            guard let privKey = data["privateKey"] as? String,
+                  let publicAddress = data["publicAddress"] as? String,
+            let userInfo = data["userInfo"],
+            let signatures = data["signatures"] else { throw SessionManagerError.decodingError }
+            state = SessionData(privateKey: privKey, publicAddress: publicAddress, signatures: signatures as? TorusKey.SessionData, userInfo: userInfo as? UserInfo)
+        }
     }
     
-    public func isSessionIdExists() -> Bool {
-        if (sessionManager.getSessionID() != nil) && !(sessionManager.getSessionID()!.isEmpty) {
-            return true
-        }
-        return false
+    public func getSessionData() -> SessionData? {
+        return self.state
+    }
+    
+    public func connected() -> Bool {
+        return self.state != nil
     }
 
-    public func getTorusKey(loginParams: LoginParams) async throws -> TorusKey {
+    private func getTorusKey(loginParams: LoginParams) async throws -> TorusKey {
         var retrieveSharesResponse: TorusKey
 
         let details = try await nodeDetailManager.getNodeDetails(verifier: loginParams.verifier, verifierID: loginParams.verifierId)
 
-        let userDetails = try await torusUtils.getUserTypeAndAddress(endpoints: details.getTorusNodeEndpoints(), verifier: loginParams.verifier, verifierId: loginParams.verifierId)
-
-        if userDetails.metadata?.upgraded == true {
-            throw "User already has enabled MFA"
+        /* TODO: Fix me
+        if let serverTimeOffset = loginParams.serverTimeOffset {
+            torusUtils.setServerTimeOffset(serverTimeOffset: serverTimeOffset)
         }
-
+        */
+        
         if let subVerifierInfoArray = loginParams.subVerifierInfoArray, !subVerifierInfoArray.isEmpty {
             var aggregateIdTokenSeeds = [String]()
             var subVerifierIds = [String]()
@@ -62,7 +73,7 @@ public class SingleFactorAuth {
             let verifierParams = VerifierParams(verifier_id: loginParams.verifierId, sub_verifier_ids: subVerifierIds, verify_params: verifyParams)
 
             let aggregateIdToken = try curveSecp256k1.keccak256(data: Data(aggregateIdTokenSeeds.joined(separator: "\u{001d}").utf8)).toHexString()
-
+            
             retrieveSharesResponse = try await torusUtils.retrieveShares(
                 endpoints: details.getTorusNodeEndpoints(),
                 verifier: loginParams.verifier,
@@ -79,18 +90,48 @@ public class SingleFactorAuth {
                 idToken: loginParams.idToken
             )
         }
+        
+        if retrieveSharesResponse.metadata.upgraded == true {
+            throw SFAError.MFAAlreadyEnabled
+        }
 
         return retrieveSharesResponse
     }
 
-    public func connect(loginParams: LoginParams) async throws -> SFAKey {
+    public func connect(loginParams: LoginParams) async throws -> SessionData {
         let torusKey = try await getTorusKey(loginParams: loginParams)
 
         let publicAddress = torusKey.finalKeyData.evmAddress
-        let privateKey = torusKey.finalKeyData.privKey
+        let privateKey = if (torusKey.finalKeyData.privKey.isEmpty) {
+            torusKey.oAuthKeyData.privKey
+        } else {
+            torusKey.finalKeyData.privKey
+        }
 
-        let sfaKey = SFAKey(privateKey: privateKey, publicAddress: publicAddress)
+        var decodedUserInfo: UserInfo? = nil
+        
+        do {
+            let jwt = try decode(jwt: loginParams.idToken)
+            decodedUserInfo = UserInfo.init(email: jwt.body["email"] as? String ?? "", name: jwt.body["name"] as? String ?? "", profileImage: jwt.body["picture"] as? String ?? "", verifier: loginParams.verifier, verifierId: loginParams.verifierId, typeOfLogin: LoginType.jwt, state: .init(params: [:]))
+        } catch {
+            decodedUserInfo = loginParams.fallbackUserInfo
+        }
+        
+        let sessionId = try SessionManager.generateRandomSessionID()!
+        sessionManager.setSessionId(sessionId: sessionId)
+        
+        let sfaKey = SessionData(privateKey: privateKey, publicAddress: publicAddress, signatures: torusKey.sessionData, userInfo: decodedUserInfo)
         _ = try await sessionManager.createSession(data: sfaKey)
+        
+        SessionManager.saveSessionIdToStorage(sessionId)
+        
+        self.state = sfaKey
         return sfaKey
+    }
+    
+    public func logout() async throws {
+        try await sessionManager.invalidateSession()
+        SessionManager.deleteSessionIdFromStorage()
+        self.state = nil
     }
 }

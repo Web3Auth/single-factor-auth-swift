@@ -131,5 +131,7 @@ public class SingleFactorAuth {
     
     public func logout() async throws {
         try await sessionManager.invalidateSession()
+        SessionManager.deleteSessionIdFromStorage()
+        self.state = nil
     }
 }

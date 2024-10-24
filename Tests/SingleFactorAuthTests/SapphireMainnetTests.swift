@@ -1,8 +1,8 @@
 import BigInt
-import JWTKit
-import XCTest
 import FetchNodeDetails
+import JWTKit
 import SingleFactorAuth
+import XCTest
 
 final class SapphireMainnetTests: XCTestCase {
     var singleFactoreAuth: SingleFactorAuth!
@@ -46,12 +46,13 @@ final class SapphireMainnetTests: XCTestCase {
         XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
         XCTAssertEqual("0xA92E2C756B5b2abABc127907b02D4707dc085612", torusKey.getPublicAddress())
     }
-    
-    func testLogout() async throws {
-            let idToken = try generateIdToken(email: TORUS_TEST_EMAIL)
-            let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TORUS_TEST_EMAIL, idToken: idToken)
-            let _ = try await singleFactoreAuth.connect(loginParams: loginParams)
 
-            try await singleFactoreAuth.logout()
-        }
+    func testLogout() async throws {
+        let idToken = try generateIdToken(email: TORUS_TEST_EMAIL)
+        let loginParams = LoginParams(verifier: TEST_VERIFIER, verifierId: TORUS_TEST_EMAIL, idToken: idToken)
+        let _ = try await singleFactoreAuth.connect(loginParams: loginParams)
+
+        try await singleFactoreAuth.logout()
+        XCTAssertNil(singleFactoreAuth.getSessionData())
+    }
 }

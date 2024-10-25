@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Web3Auth/session-manager-swift.git",
       "state" : {
-        "revision" : "90afccc0e5e2ea8d671cdacb26899f60740b4e0b",
-        "version" : "6.0.0"
+        "revision" : "d86cd2a7f6d8095531ed609c728d851820fe85be",
+        "version" : "6.0.1"
       }
     },
     {

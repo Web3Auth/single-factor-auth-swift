@@ -28,12 +28,21 @@ public class SingleFactorAuth {
         if savedSessionId != nil && !savedSessionId!.isEmpty {
             sessionManager.setSessionId(sessionId: savedSessionId!)
             
+            // TODO: FIXME!!! Underlying dependency must use codable as a return type and not [String: Any] since it makes life difficult for ourselves unnecessarily
             let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
             guard let privKey = data["privateKey"] as? String,
                   let publicAddress = data["publicAddress"] as? String,
             let userInfo = data["userInfo"],
             let signatures = data["signatures"] else { throw SessionManagerError.decodingError }
-            state = SessionData(privateKey: privKey, publicAddress: publicAddress, signatures: signatures as? TorusKey.SessionData, userInfo: userInfo as? UserInfo)
+            
+            let jsonInfo = try JSONSerialization.data(withJSONObject: userInfo, options: [])
+            
+            let finalUserInfo = try JSONDecoder().decode(UserInfo.self, from: jsonInfo)
+
+            let jsonData = try JSONSerialization.data(withJSONObject: signatures, options: [])
+            
+            let finalSignatures = try JSONDecoder().decode(TorusKey.SessionData.self, from: jsonData)
+            state = SessionData(privateKey: privKey, publicAddress: publicAddress, signatures: finalSignatures, userInfo: finalUserInfo)
         }
     }
     

@@ -1,4 +1,4 @@
-public class LoginParams {
+public class LoginParams: Codable {
     public let verifier: String
     public let verifierId: String
     public let idToken: String
@@ -16,7 +16,7 @@ public class LoginParams {
     }
 }
 
-public struct TorusSubVerifierInfo {
+public struct TorusSubVerifierInfo: Codable {
     public var verifier: String
     public var idToken: String
 

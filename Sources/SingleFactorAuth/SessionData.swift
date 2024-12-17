@@ -5,10 +5,10 @@ import TorusUtils
 public class SessionData: Codable {
     let privateKey: String
     let publicAddress: String
-    let signatures: TorusKey.SessionData?
+    let signatures: [String]?
     let userInfo: UserInfo?
 
-    init(privateKey: String, publicAddress: String, signatures: TorusKey.SessionData? = nil, userInfo: UserInfo? = nil) {
+    init(privateKey: String, publicAddress: String, signatures: [String]? = nil, userInfo: UserInfo? = nil) {
         self.privateKey = privateKey
         self.publicAddress = publicAddress
         self.signatures = signatures
@@ -27,7 +27,7 @@ public class SessionData: Codable {
         return userInfo
     }
     
-    public func getSignatures() -> TorusKey.SessionData? {
+    public func getSignatures() -> [String]? {
         return self.signatures
     }
 }

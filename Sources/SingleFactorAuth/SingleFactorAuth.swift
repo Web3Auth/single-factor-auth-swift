@@ -210,7 +210,7 @@ public class SingleFactorAuth {
             throw SFAError.runtimeError("Failed to fetch project configuration.")
         }
     }
-
+    
     public func request(chainConfig: ChainConfig, method: String, requestParams: [Any], path: String? = "wallet/request", appState: String? = nil) async throws -> SignResponse {
         let projectConfigSuccess = try await fetchProjectConfig()
         

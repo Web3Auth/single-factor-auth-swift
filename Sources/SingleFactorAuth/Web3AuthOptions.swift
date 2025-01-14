@@ -1,6 +1,6 @@
 import FetchNodeDetails
 
-public class Web3AuthOptions {
+public class Web3AuthOptions: Codable {
     private var web3AuthNetwork: Web3AuthNetwork
     private var clientId: String
     private var sessionTime: Int

@@ -20,7 +20,7 @@ public class SingleFactorAuth {
 
     public init(params: Web3AuthOptions) throws {
         web3AuthOptions = params
-        sessionManager = SessionManager(sessionServerBaseUrl: params.getStorageServerUrl(), sessionTime: params.getSessionTime(), allowedOrigin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
+        sessionManager = SessionManager(sessionServerBaseUrl: params.getStorageServerUrl(), sessionTime: params.getSessionTime(), allowedOrigin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift", sessionNamespace: "sfa")
         nodeDetailManager = NodeDetailManager(network: params.getNetwork())
         let torusOptions = TorusOptions(clientId: params.getClientId(), network: params.getNetwork(), serverTimeOffset: params.getServerTimeOffset(), enableOneKey: true)
         try torusUtils = TorusUtils(params: torusOptions)

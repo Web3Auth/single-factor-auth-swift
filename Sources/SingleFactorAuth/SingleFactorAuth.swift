@@ -17,9 +17,18 @@ public class SingleFactorAuth {
     private var state: SessionData?
     private var web3AuthOptions: Web3AuthOptions?
     var webViewController: WebViewController = DispatchQueue.main.sync { WebViewController(onSignResponse: { _ in }) }
+    let SIGNER_MAP: [Web3AuthNetwork: String] = [
+        .MAINNET: "https://signer.web3auth.io",
+        .TESTNET: "https://signer.web3auth.io",
+        .CYAN: "https://signer-polygon.web3auth.io",
+        .AQUA: "https://signer-polygon.web3auth.io",
+        .SAPPHIRE_MAINNET: "https://signer.web3auth.io",
+        .SAPPHIRE_DEVNET: "https://signer.web3auth.io",
+    ]
 
     public init(params: Web3AuthOptions) throws {
         web3AuthOptions = params
+        Router.baseURL = SIGNER_MAP[params.getNetwork()] ?? ""
         sessionManager = SessionManager(sessionServerBaseUrl: params.getStorageServerUrl(), sessionTime: params.getSessionTime(), allowedOrigin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift", sessionNamespace: "sfa")
         nodeDetailManager = NodeDetailManager(network: params.getNetwork())
         let torusOptions = TorusOptions(clientId: params.getClientId(), network: params.getNetwork(), serverTimeOffset: params.getServerTimeOffset(), enableOneKey: true)

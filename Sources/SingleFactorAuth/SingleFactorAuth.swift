@@ -231,6 +231,7 @@ public class SingleFactorAuth {
                 signMessageMap["loginId"] = loginId
                 signMessageMap["sessionId"] = sessionId
                 signMessageMap["platform"] = "ios"
+                signMessageMap["appState"] = appState
                 
                 var requestData: [String: Any] = [:]
                 requestData["method"] = method

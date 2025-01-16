@@ -188,7 +188,7 @@ public class SingleFactorAuth {
     public func showWalletUI(chainConfig: ChainConfig, path: String? = "wallet") async throws {
         let fetchConfigResult = try await fetchProjectConfig()
         if fetchConfigResult {
-            let sessionId = SessionManager.getSessionIdFromStorage()!
+            let sessionId = sessionManager.getSessionId()
             if !sessionId.isEmpty {
                 web3AuthOptions?.chainConfig = chainConfig
                 let walletServicesParams = WalletServicesParams(options: web3AuthOptions!, appState: nil)
@@ -199,6 +199,7 @@ public class SingleFactorAuth {
                     "loginId": loginId,
                     "sessionId": sessionId,
                     "platform": "ios",
+                    "sessionNamespace": "sfa"
                 ]
                 
                 let url = try SingleFactorAuth.generateAuthSessionURL(
@@ -224,11 +225,11 @@ public class SingleFactorAuth {
             throw SFAError.runtimeError("Fetch Config API Error")
         }
     }
-
+    
     public func request(chainConfig: ChainConfig, method: String, requestParams: [Any], path: String? = "wallet/request", appState: String? = nil) async throws -> SignResponse {
         let fetchConfigResult = try await fetchProjectConfig()
         if fetchConfigResult {
-            let sessionId = SessionManager.getSessionIdFromStorage()!
+            let sessionId = sessionManager.getSessionId()
             if !sessionId.isEmpty {
                 web3AuthOptions?.chainConfig = chainConfig
                 
@@ -241,6 +242,7 @@ public class SingleFactorAuth {
                 signMessageMap["sessionId"] = sessionId
                 signMessageMap["platform"] = "ios"
                 signMessageMap["appState"] = appState
+                signMessageMap["sessionNamespace"] = "sfa"
                 
                 var requestData: [String: Any] = [:]
                 requestData["method"] = method

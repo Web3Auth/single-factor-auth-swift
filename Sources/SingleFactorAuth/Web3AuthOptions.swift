@@ -61,7 +61,7 @@ public class Web3AuthOptions: Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case web3AuthNetwork
+        case network
         case clientId
         case sessionTime
         case storageServerUrl
@@ -76,7 +76,7 @@ public class Web3AuthOptions: Codable {
     
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let networkString = try container.decode(String.self, forKey: .web3AuthNetwork)
+        let networkString = try container.decode(String.self, forKey: .network)
         self.web3AuthNetwork = try Web3AuthNetwork(from: networkString as! Decoder) // Handle default case
         self.clientId = try container.decode(String.self, forKey: .clientId)
         self.sessionTime = try container.decode(Int.self, forKey: .sessionTime)
@@ -92,7 +92,7 @@ public class Web3AuthOptions: Codable {
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(web3AuthNetwork.name, forKey: .web3AuthNetwork)
+        try container.encode(web3AuthNetwork.name, forKey: .network)
         try container.encode(clientId, forKey: .clientId)
         try container.encode(sessionTime, forKey: .sessionTime)
         try container.encodeIfPresent(storageServerUrl, forKey: .storageServerUrl)

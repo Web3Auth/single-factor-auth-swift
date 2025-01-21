@@ -169,10 +169,10 @@ public class SingleFactorAuth {
                 // os_log("fetchProjectConfig API response is: %@", log: getTorusLogger(log: Web3AuthLogger.network, type: .info), type: .info, "\(String(describing: result))")
                 web3AuthOptions?.originData = result.whitelist.signedUrls.merging(web3AuthOptions?.originData ?? [:]) { _, new in new }
                 if let whiteLabelData = result.whiteLabelData {
-                    if web3AuthOptions?.whitelLabelData == nil {
-                        web3AuthOptions?.whitelLabelData = whiteLabelData
+                    if web3AuthOptions?.whiteLabel == nil {
+                        web3AuthOptions?.whiteLabel = whiteLabelData
                     } else {
-                        web3AuthOptions?.whitelLabelData = web3AuthOptions?.whitelLabelData?.merge(with: whiteLabelData)
+                        web3AuthOptions?.whiteLabel = web3AuthOptions?.whiteLabel?.merge(with: whiteLabelData)
                     }
                 }
                 response = true

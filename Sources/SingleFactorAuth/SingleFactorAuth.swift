@@ -54,7 +54,7 @@ public class SingleFactorAuth {
 
             let jsonData = try JSONSerialization.data(withJSONObject: signatures, options: [])
             
-            let finalSignatures = try JSONDecoder().decode(TorusKey.SessionData.self, from: jsonData)
+            let finalSignatures = try JSONDecoder().decode([String].self, from: jsonData)
             state = SessionData(privateKey: privKey, publicAddress: publicAddress, signatures: finalSignatures, userInfo: finalUserInfo)
         }
     }
@@ -142,7 +142,8 @@ public class SingleFactorAuth {
         let sessionId = try SessionManager.generateRandomSessionID()!
         sessionManager.setSessionId(sessionId: sessionId)
         
-        let sfaKey = SessionData(privateKey: privateKey, publicAddress: publicAddress, signatures: torusKey.sessionData, userInfo: decodedUserInfo)
+        let sfaKey = SessionData(privateKey: privateKey, publicAddress: publicAddress,
+                                 signatures: getSignatureData(sessionTokenData: torusKey.sessionData.sessionTokenData), userInfo: decodedUserInfo)
         _ = try await sessionManager.createSession(data: sfaKey)
         
         SessionManager.saveSessionIdToStorage(sessionId)
@@ -155,6 +156,16 @@ public class SingleFactorAuth {
         try await sessionManager.invalidateSession()
         SessionManager.deleteSessionIdFromStorage()
         self.state = nil
+    }
+    
+    private func getSignatureData(sessionTokenData: [SessionToken?]) -> [String] {
+        return sessionTokenData
+            .compactMap { $0 } // Filters out nil values
+            .map { session in
+                """
+                {"data":"\(session.token)","sig":"\(session.signature)"}
+                """
+            }
     }
     
     public func fetchProjectConfig() async throws -> Bool {

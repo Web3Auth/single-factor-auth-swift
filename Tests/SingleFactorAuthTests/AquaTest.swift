@@ -23,8 +23,8 @@ final class AquaTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
 
         let requiredPrivateKey = "d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8"
-        XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
-        XCTAssertEqual("0x8b32926cD9224fec3B296aA7250B049029434807", torusKey.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, torusKey.privateKey)
+        XCTAssertEqual("0x8b32926cD9224fec3B296aA7250B049029434807", torusKey.publicAddress)
     }
 
     func testInitialise() async throws {
@@ -33,8 +33,22 @@ final class AquaTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
         try await singleFactoreAuth.initialize()
         let requiredPrivateKey = "d8204e9f8c270647294c54acd8d49ee208789f981a7503158e122527d38626d8"
-        XCTAssertEqual(requiredPrivateKey,         singleFactoreAuth.getSessionData()!.getPrivateKey())
-        XCTAssertEqual(torusKey.getPublicAddress(), singleFactoreAuth.getSessionData()!.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, singleFactoreAuth.getSessionData()!.privateKey)
+        XCTAssertEqual(torusKey.publicAddress, singleFactoreAuth.getSessionData()!.publicAddress)
+        var chainConfig: ChainConfig = ChainConfig(
+             chainNamespace: ChainNamespace.eip155,
+             chainId: "0x1",
+             rpcTarget: "https://eth.llamarpc.com/",
+             ticker: "ETH"
+         )
+        //try await singleFactoreAuth.showWalletUI(chainConfig: chainConfig)
+        //try await singleFactoreAuth.showWalletUI(chainConfig: chainConfig)
+        var params = [Any]()
+        params.append("Hello, Web3Auth from Swift!")
+        params.append(singleFactoreAuth.getSessionData()!.publicAddress)
+        params.append("Web3Auth")
+        let signResponse = try await self.singleFactoreAuth?.request(chainConfig: chainConfig, method: "personal_sign", requestParams: params)
+        try await singleFactoreAuth.showWalletUI(chainConfig: chainConfig)
     }
 
     func testAggregrateGetTorusKey() async throws {
@@ -43,7 +57,17 @@ final class AquaTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
 
         let requiredPrivateKey = "6f8b884f19975fb0d138ed21b22a6a7e1b79e37f611d0a29f1442b34efc6bacd"
-        XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
-        XCTAssertEqual("0x62BaCa60f48C2b2b7e3074f7B7b4795EeF2afD2e", torusKey.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, torusKey.privateKey)
+        XCTAssertEqual("0x62BaCa60f48C2b2b7e3074f7B7b4795EeF2afD2e", torusKey.publicAddress)
+    }
+    
+    func testWalletUI() async throws {
+       var chainConfig: ChainConfig = ChainConfig(
+            chainNamespace: ChainNamespace.eip155,
+            chainId: "0x1",
+            rpcTarget: "https://mainnet.infura.io/v3/1d7f0c9a5c9a4b6e8b3a2b0a2b7b3f0d",
+            ticker: "ETH"
+        )
+        try await singleFactoreAuth.showWalletUI(chainConfig: chainConfig)
     }
 }

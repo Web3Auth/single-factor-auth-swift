@@ -147,7 +147,7 @@ public class SingleFactorAuth {
         _ = try await sessionManager.createSession(data: sfaKey)
         
         SessionManager.saveSessionIdToStorage(sessionId)
-        
+        sessionManager.setSessionId(sessionId: sessionId)
         self.state = sfaKey
         return sfaKey
     }
@@ -213,6 +213,7 @@ public class SingleFactorAuth {
                     "sessionNamespace": "sfa"
                 ]
                 
+                sessionManager.setSessionId(sessionId: sessionId)
                 let url = try SingleFactorAuth.generateAuthSessionURL(
                     initParams: web3AuthOptions!,
                     jsonObject: jsonObject,
@@ -239,55 +240,62 @@ public class SingleFactorAuth {
     
     public func request(chainConfig: ChainConfig, method: String, requestParams: [Any], path: String? = "wallet/request", appState: String? = nil) async throws -> SignResponse {
         let fetchConfigResult = try await fetchProjectConfig()
-        if fetchConfigResult {
-            let sessionId = sessionManager.getSessionId()
-            if !sessionId.isEmpty {
-                web3AuthOptions?.chainConfig = chainConfig
-                
-                let walletServicesParams = WalletServicesParams(options: web3AuthOptions!, appState: appState)
-                
-                let loginId = try await getLoginId(data: walletServicesParams)
-                
-                var signMessageMap: [String: String] = [:]
-                signMessageMap["loginId"] = loginId
-                signMessageMap["sessionId"] = sessionId
-                signMessageMap["platform"] = "ios"
-                signMessageMap["appState"] = appState
-                signMessageMap["sessionNamespace"] = "sfa"
-                
-                var requestData: [String: Any] = [:]
-                requestData["method"] = method
-                requestData["params"] = try? JSONSerialization.jsonObject(with: JSONSerialization.data(withJSONObject: requestParams), options: []) as? [Any]
-                
-                if let requestDataJson = try? JSONSerialization.data(withJSONObject: requestData, options: []),
-                   let requestDataJsonString = String(data: requestDataJson, encoding: .utf8) {
-                    // Add the requestData JSON string to signMessageMap as a property
-                    signMessageMap["request"] = requestDataJsonString
-                }
-                
-                let url = try SingleFactorAuth.generateAuthSessionURL(initParams: web3AuthOptions!, jsonObject: signMessageMap, sdkUrl: web3AuthOptions?.walletSdkUrl, path: path)
-                
-                // open url in webview
-                return await withCheckedContinuation { continuation in
-                    Task {
-                        let webViewController = await MainActor.run {
-                            WebViewController(redirectUrl: web3AuthOptions?.redirectUrl, onSignResponse: { signResponse in
-                                continuation.resume(returning: signResponse)
-                            })
+        guard fetchConfigResult else {
+            throw SFAError.runtimeError("Fetch Config API Error")
+        }
+
+        let sessionId = SessionManager.getSessionIdFromStorage()!
+        guard !sessionId.isEmpty else {
+            throw SFAError.runtimeError("SessionId not found. Please login first.")
+        }
+
+        web3AuthOptions?.chainConfig = chainConfig
+        let walletServicesParams = WalletServicesParams(options: web3AuthOptions!, appState: appState)
+        let loginId = try await getLoginId(data: walletServicesParams)
+
+        var signMessageMap: [String: String] = [:]
+        signMessageMap["loginId"] = loginId
+        signMessageMap["sessionId"] = sessionId
+        signMessageMap["platform"] = "ios"
+        signMessageMap["appState"] = appState
+        signMessageMap["sessionNamespace"] = "sfa"
+
+        var requestData: [String: Any] = [:]
+        requestData["method"] = method
+        requestData["params"] = try? JSONSerialization.jsonObject(with: JSONSerialization.data(withJSONObject: requestParams), options: []) as? [Any]
+
+        if let requestDataJson = try? JSONSerialization.data(withJSONObject: requestData, options: []),
+           let requestDataJsonString = String(data: requestDataJson, encoding: .utf8) {
+            signMessageMap["request"] = requestDataJsonString
+        }
+
+        sessionManager.setSessionId(sessionId: sessionId)
+        let url = try SingleFactorAuth.generateAuthSessionURL(initParams: web3AuthOptions!, jsonObject: signMessageMap, sdkUrl: web3AuthOptions?.walletSdkUrl, path: path)
+
+        return try await withCheckedThrowingContinuation { continuation in
+            Task {
+                do {
+                    let webViewController = await MainActor.run {
+                        WebViewController(redirectUrl: web3AuthOptions?.redirectUrl, onSignResponse: { signResponse in
+                            continuation.resume(returning: signResponse)
+                        })
+                    }
+
+                    DispatchQueue.main.async {
+                        guard let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
+                            continuation.resume(throwing: SFAError.runtimeError("Failed to present WebViewController"))
+                            return
                         }
                         
-                        DispatchQueue.main.async {
-                            UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.rootViewController?.present(webViewController, animated: true) {
-                                webViewController.webView.load(URLRequest(url: url))
-                            }
+                        rootVC.present(webViewController, animated: true) {
+                            webViewController.webView.load(URLRequest(url: url))
                         }
                     }
+
+                } catch {
+                    continuation.resume(throwing: error)
                 }
-            } else {
-                throw SFAError.runtimeError("SessionId not found. Please login first.")
             }
-        } else {
-            throw SFAError.runtimeError("Fetch Config API Error")
         }
     }
     

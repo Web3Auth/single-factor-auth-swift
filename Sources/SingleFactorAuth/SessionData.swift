@@ -7,7 +7,7 @@ public struct SessionData: Codable {
     public let publicAddress: String
     public let signatures: [String]?
     public let userInfo: UserInfo?
-    public let sessionNamespace: String
+    let sessionNamespace: String
 
     enum CodingKeys: String, CodingKey {
         case privateKey = "privKey"

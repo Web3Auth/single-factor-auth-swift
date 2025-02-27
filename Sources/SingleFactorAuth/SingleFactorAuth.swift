@@ -1,11 +1,13 @@
 import BigInt
-import UIKit
 import Combine
 import FetchNodeDetails
 import Foundation
 import SessionManager
 import TorusUtils
 import JWTDecode
+#if canImport(UIKit)
+import UIKit
+#endif
 #if canImport(curveSecp256k1)
     import curveSecp256k1
 #endif

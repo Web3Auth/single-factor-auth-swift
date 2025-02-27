@@ -1,6 +1,5 @@
-#if canImport(UIKit)
+#if os(iOS)
 import UIKit
-#endif
 @preconcurrency import WebKit
 
 class WebViewController: UIViewController, WKScriptMessageHandler {

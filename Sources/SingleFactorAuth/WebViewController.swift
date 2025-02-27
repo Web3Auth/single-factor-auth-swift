@@ -46,18 +46,25 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        if let redirectUrl = redirectUrl, !redirectUrl.isEmpty {
-            if let url = navigationAction.request.url, url.absoluteString.contains(redirectUrl) {
-                let host = url.host ?? ""
-                let fragment = url.fragment ?? ""
-                let component = URLComponents(string: host + "?" + fragment)
-                let queryItems = component?.queryItems
-                let b64ParamsItem = queryItems?.first(where: { $0.name == "b64Params" })
-                let callbackFragment = (b64ParamsItem?.value)!
-                let b64ParamString = Data.fromBase64URL(callbackFragment)
-                let signResponse = try? JSONDecoder().decode(SignResponse.self, from: b64ParamString!)
-                onSignResponse(signResponse!)
+        guard let redirectUrl = redirectUrl, !redirectUrl.isEmpty else {
+            decisionHandler(.allow)
+            return
+        }
+        if let url = navigationAction.request.url, url.absoluteString.contains(redirectUrl) {
+            guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                  let b64ParamsItem = components.queryItems?.first(where: { $0.name == "b64Params" }),
+                  let callbackFragment = b64ParamsItem.value,
+                  let b64ParamData = Data.fromBase64URL(callbackFragment) else {
+                decisionHandler(.allow)
+                return
+            }
+
+            do {
+                let signResponse = try JSONDecoder().decode(SignResponse.self, from: b64ParamData)
+                onSignResponse(signResponse)
                 dismiss(animated: true, completion: nil)
+            } catch {
+                print("Decoding SignResponse failed: \(error)")
             }
         }
         decisionHandler(.allow)
@@ -65,11 +72,8 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "JSBridge", let messageBody = message.body as? String {
-            switch messageBody {
-            case "closeWalletServices":
+            if messageBody == "closeWalletServices" {
                 dismiss(animated: true, completion: nil)
-            default:
-                return
             }
         }
     }
@@ -102,3 +106,4 @@ extension WebViewController: WKUIDelegate {
         }
     }
 }
+#endif

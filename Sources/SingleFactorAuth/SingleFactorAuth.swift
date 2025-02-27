@@ -16,7 +16,7 @@ public class SingleFactorAuth {
     private var sessionManager: SessionManager
     private var state: SessionData?
     private var web3AuthOptions: Web3AuthOptions?
-    var webViewController: WebViewController = DispatchQueue.main.sync { WebViewController(onSignResponse: { _ in }) }
+    var webViewController: WebViewController = WebViewController(onSignResponse: { _ in })
     let SIGNER_MAP: [Web3AuthNetwork: String] = [
         .MAINNET: "https://signer.web3auth.io",
         .TESTNET: "https://signer.web3auth.io",
@@ -274,26 +274,21 @@ public class SingleFactorAuth {
 
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                do {
-                    let webViewController = await MainActor.run {
-                        WebViewController(redirectUrl: web3AuthOptions?.redirectUrl, onSignResponse: { signResponse in
-                            continuation.resume(returning: signResponse)
-                        })
+                let webViewController = await MainActor.run {
+                    WebViewController(redirectUrl: web3AuthOptions?.redirectUrl, onSignResponse: { signResponse in
+                        continuation.resume(returning: signResponse)
+                    })
+                }
+                
+                DispatchQueue.main.async {
+                    guard let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
+                        continuation.resume(throwing: SFAError.runtimeError("Failed to present WebViewController"))
+                        return
                     }
-
-                    DispatchQueue.main.async {
-                        guard let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
-                            continuation.resume(throwing: SFAError.runtimeError("Failed to present WebViewController"))
-                            return
-                        }
-                        
-                        rootVC.present(webViewController, animated: true) {
-                            webViewController.webView.load(URLRequest(url: url))
-                        }
+                    
+                    rootVC.present(webViewController, animated: true) {
+                        webViewController.webView.load(URLRequest(url: url))
                     }
-
-                } catch {
-                    continuation.resume(throwing: error)
                 }
             }
         }

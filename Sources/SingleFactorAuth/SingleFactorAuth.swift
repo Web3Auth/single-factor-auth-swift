@@ -1,13 +1,13 @@
 import BigInt
+#if canImport(UIKit)
+import UIKit
+#endif
 import Combine
 import FetchNodeDetails
 import Foundation
 import SessionManager
 import TorusUtils
 import JWTDecode
-#if canImport(UIKit)
-import UIKit
-#endif
 #if canImport(curveSecp256k1)
     import curveSecp256k1
 #endif
@@ -276,22 +276,22 @@ public class SingleFactorAuth {
 
         return try await withCheckedThrowingContinuation { continuation in
             Task {
-                let webViewController = await MainActor.run {
-                    WebViewController(redirectUrl: web3AuthOptions?.redirectUrl, onSignResponse: { signResponse in
-                        continuation.resume(returning: signResponse)
-                    })
-                }
-                
-                DispatchQueue.main.async {
-                    guard let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
-                        continuation.resume(throwing: SFAError.runtimeError("Failed to present WebViewController"))
-                        return
+                    let webViewController = await MainActor.run {
+                        WebViewController(redirectUrl: web3AuthOptions?.redirectUrl, onSignResponse: { signResponse in
+                            continuation.resume(returning: signResponse)
+                        })
                     }
-                    
-                    rootVC.present(webViewController, animated: true) {
-                        webViewController.webView.load(URLRequest(url: url))
+
+                    DispatchQueue.main.async {
+                        guard let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController else {
+                            continuation.resume(throwing: SFAError.runtimeError("Failed to present WebViewController"))
+                            return
+                        }
+                        
+                        rootVC.present(webViewController, animated: true) {
+                            webViewController.webView.load(URLRequest(url: url))
+                        }
                     }
-                }
             }
         }
     }

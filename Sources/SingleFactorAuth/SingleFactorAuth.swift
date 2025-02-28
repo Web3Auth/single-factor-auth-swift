@@ -224,6 +224,7 @@ public class SingleFactorAuth {
                 )
                 
                 // Ensure UI-related operations occur on the main thread
+                #if os(iOS)
                 await MainActor.run {
                     guard let rootViewController = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first?.rootViewController else {
                         return
@@ -232,6 +233,7 @@ public class SingleFactorAuth {
                         self.webViewController.webView.load(URLRequest(url: url))
                     }
                 }
+                #endif
             } else {
                 throw SFAError.runtimeError("SessionId not found. Please login first.")
             }
@@ -275,6 +277,7 @@ public class SingleFactorAuth {
         let url = try SingleFactorAuth.generateAuthSessionURL(initParams: web3AuthOptions!, jsonObject: signMessageMap, sdkUrl: web3AuthOptions?.walletSdkUrl, path: path)
 
         return try await withCheckedThrowingContinuation { continuation in
+            #if os(iOS)
             Task {
                     let webViewController = await MainActor.run {
                         WebViewController(redirectUrl: web3AuthOptions?.redirectUrl, onSignResponse: { signResponse in
@@ -293,6 +296,7 @@ public class SingleFactorAuth {
                         }
                     }
             }
+            #endif
         }
     }
     

@@ -18,7 +18,7 @@ public class SingleFactorAuth {
     private var sessionManager: SessionManager
     private var state: SessionData?
     private var web3AuthOptions: Web3AuthOptions?
-    var webViewController: WebViewController = WebViewController(onSignResponse: { _ in })
+    var webViewController = WebViewController(onSignResponse: { _ in })
     let SIGNER_MAP: [Web3AuthNetwork: String] = [
         .MAINNET: "https://signer.web3auth.io",
         .TESTNET: "https://signer.web3auth.io",

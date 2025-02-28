@@ -24,7 +24,6 @@ let package = Package(
         .target(
             name: "SingleFactorAuth",
             dependencies: [
-                "WebViewController",
                 .product(name: "TorusUtils", package: "torus-utils-swift"),
                 .product(name: "SessionManager", package: "session-manager-swift"),
                 .product(name: "JWTDecode", package: "JWTDecode.swift")

@@ -2,7 +2,7 @@
 import UIKit
 @preconcurrency import WebKit
 
-class WebViewController: UIViewController, WKScriptMessageHandler {
+public class WebViewController: UIViewController, WKScriptMessageHandler {
     var webView: WKWebView!
     var popupWebView: WKWebView?
     let activityIndicator = UIActivityIndicatorView(style: .large)
@@ -20,7 +20,7 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
         super.init(coder: aDecoder)
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         setupWebView()
         activityIndicator.startAnimating()
@@ -45,7 +45,7 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
         view.addSubview(webView)
     }
 
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let redirectUrl = redirectUrl, !redirectUrl.isEmpty else {
             decisionHandler(.allow)
             return
@@ -70,7 +70,7 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
         decisionHandler(.allow)
     }
 
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "JSBridge", let messageBody = message.body as? String {
             if messageBody == "closeWalletServices" {
                 dismiss(animated: true, completion: nil)
@@ -80,17 +80,17 @@ class WebViewController: UIViewController, WKScriptMessageHandler {
 }
 
 extension WebViewController: WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+    public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         activityIndicator.startAnimating()
     }
 
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         activityIndicator.stopAnimating()
     }
 }
 
 extension WebViewController: WKUIDelegate {
-    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         popupWebView = WKWebView(frame: view.bounds, configuration: configuration)
         popupWebView!.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         popupWebView!.navigationDelegate = self
@@ -99,7 +99,7 @@ extension WebViewController: WKUIDelegate {
         return popupWebView!
     }
 
-    func webViewDidClose(_ webView: WKWebView) {
+    public func webViewDidClose(_ webView: WKWebView) {
         if webView == popupWebView {
             popupWebView?.removeFromSuperview()
             popupWebView = nil

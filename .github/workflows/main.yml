@@ -26,6 +26,16 @@ jobs:
           - iOS
     steps:
       - uses: actions/checkout@v4
+      # Ensure correct Ruby version and install dependencies
+      - name: Set up Ruby
+        run: |
+          echo "Using Ruby version:"
+          ruby -v
+          gem install bundler xcpretty
+      # Manually ensure ERB is available
+      - name: Ensure ERB is installed
+        run: |
+          gem install erb || echo "ERB already installed"
       - uses: mxcl/xcodebuild@v3.0.0
         with:
           platform: ${{ matrix.platform }}

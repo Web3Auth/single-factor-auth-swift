@@ -26,10 +26,26 @@ jobs:
           - iOS
     steps:
       - uses: actions/checkout@v4
-      - uses: mxcl/xcodebuild@v3.0.0
+      # Ensure correct Ruby version and install necessary dependencies
+      - name: Set up Ruby
+        run: |
+          echo "Using Ruby version:"
+          ruby -v
+          gem install bundler xcpretty
+
+      # Run tests manually with xcodebuild for better logging
+      - name: Run Xcode Tests
+        run: |
+          xcodebuild test \
+            -scheme SingleFactorAuth \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -resultBundlePath TestResults.xcresult \
+            | xcpretty --report html --output TestResults.html
+        continue-on-error: false 
+
+      # Upload test results as an artifact for debugging
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
         with:
-          platform: ${{ matrix.platform }}
-          action: test
-          scheme: SingleFactorAuth
-          code-coverage: true
-          upload-logs: always
+          name: TestResults
+          path: TestResults.xcresult

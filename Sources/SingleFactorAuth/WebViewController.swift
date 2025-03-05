@@ -5,7 +5,6 @@ public typealias PlatformViewController = UIViewController
 import AppKit
 public typealias PlatformViewController = NSViewController
 #endif
-
 @preconcurrency import WebKit
 
 public class WebViewController: PlatformViewController, WKScriptMessageHandler {

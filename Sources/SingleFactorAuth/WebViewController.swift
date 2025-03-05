@@ -1,11 +1,21 @@
 #if os(iOS)
 import UIKit
+public typealias PlatformViewController = UIViewController
+#elseif os(macOS)
+import AppKit
+public typealias PlatformViewController = NSViewController
+#endif
+
 @preconcurrency import WebKit
 
-public class WebViewController: UIViewController, WKScriptMessageHandler {
+public class WebViewController: PlatformViewController, WKScriptMessageHandler {
     var webView: WKWebView!
     var popupWebView: WKWebView?
+    
+    #if os(iOS)
     let activityIndicator = UIActivityIndicatorView(style: .large)
+    #endif
+    
     var redirectUrl: String?
     var onSignResponse: (SignResponse) -> Void
 
@@ -23,8 +33,11 @@ public class WebViewController: UIViewController, WKScriptMessageHandler {
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupWebView()
+        
+        #if os(iOS)
         activityIndicator.startAnimating()
         activityIndicator.stopAnimating()
+        #endif
     }
 
     func setupWebView() {
@@ -38,10 +51,13 @@ public class WebViewController: UIViewController, WKScriptMessageHandler {
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
 
         webView = WKWebView(frame: view.bounds, configuration: configuration)
+        
+        #if os(iOS)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #endif
+        
         webView.uiDelegate = self
         webView.navigationDelegate = self
-
         view.addSubview(webView)
     }
 
@@ -62,7 +78,12 @@ public class WebViewController: UIViewController, WKScriptMessageHandler {
             do {
                 let signResponse = try JSONDecoder().decode(SignResponse.self, from: b64ParamData)
                 onSignResponse(signResponse)
+                
+                #if os(iOS)
                 dismiss(animated: true, completion: nil)
+                #elseif os(macOS)
+                self.view.window?.close()
+                #endif
             } catch {
                 print("Decoding SignResponse failed: \(error)")
             }
@@ -73,7 +94,11 @@ public class WebViewController: UIViewController, WKScriptMessageHandler {
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "JSBridge", let messageBody = message.body as? String {
             if messageBody == "closeWalletServices" {
+                #if os(iOS)
                 dismiss(animated: true, completion: nil)
+                #elseif os(macOS)
+                self.view.window?.close()
+                #endif
             }
         }
     }
@@ -81,18 +106,26 @@ public class WebViewController: UIViewController, WKScriptMessageHandler {
 
 extension WebViewController: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        #if os(iOS)
         activityIndicator.startAnimating()
+        #endif
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        #if os(iOS)
         activityIndicator.stopAnimating()
+        #endif
     }
 }
 
 extension WebViewController: WKUIDelegate {
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         popupWebView = WKWebView(frame: view.bounds, configuration: configuration)
+        
+        #if os(iOS)
         popupWebView!.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #endif
+        
         popupWebView!.navigationDelegate = self
         popupWebView!.uiDelegate = self
         view.addSubview(popupWebView!)
@@ -106,4 +139,3 @@ extension WebViewController: WKUIDelegate {
         }
     }
 }
-#endif

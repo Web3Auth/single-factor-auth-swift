@@ -45,7 +45,7 @@ public class SingleFactorAuth {
             
             // TODO: FIXME!!! Underlying dependency must use codable as a return type and not [String: Any] since it makes life difficult for ourselves unnecessarily
             let data = try await sessionManager.authorizeSession(origin: Bundle.main.bundleIdentifier ?? "single-factor-auth-swift")
-            guard let privKey = data["privateKey"] as? String,
+            guard let privKey = data["privKey"] as? String,
                   let publicAddress = data["publicAddress"] as? String,
             let userInfo = data["userInfo"],
             let signatures = data["signatures"] else { throw SessionManagerError.decodingError }

@@ -22,8 +22,8 @@ final class CyanTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
 
         let requiredPrivateKey = "223d982054fa1ad27d1497560521e4cce5b8c6438c38533c7bad27ff21ce0546"
-        XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
-        XCTAssertEqual("0x6b902fBCEb0E0374e5eB9eDFe68cD4B888c32150", torusKey.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, torusKey.privateKey)
+        XCTAssertEqual("0x6b902fBCEb0E0374e5eB9eDFe68cD4B888c32150", torusKey.publicAddress)
     }
 
     func testInitialise() async throws {
@@ -32,8 +32,8 @@ final class CyanTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
         let requiredPrivateKey = "223d982054fa1ad27d1497560521e4cce5b8c6438c38533c7bad27ff21ce0546"
         try await singleFactoreAuth.initialize()
-        XCTAssertEqual(requiredPrivateKey, singleFactoreAuth.getSessionData()!.getPrivateKey())
-        XCTAssertEqual(torusKey.getPublicAddress(), singleFactoreAuth.getSessionData()!.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, singleFactoreAuth.getSessionData()!.privateKey)
+        XCTAssertEqual(torusKey.publicAddress, singleFactoreAuth.getSessionData()!.publicAddress)
     }
 
     func testAggregrateGetTorusKey() async throws {
@@ -42,7 +42,7 @@ final class CyanTest: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
 
         let requiredPrivateKey = "66af498ea82c95d52fdb8c8dedd44cf2f758424a0eecab7ac3dd8721527ea2d4"
-        XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
-        XCTAssertEqual("0xFF4c4A0Aa5D633302B5711C3047D7D5967884521", torusKey.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, torusKey.privateKey)
+        XCTAssertEqual("0xFF4c4A0Aa5D633302B5711C3047D7D5967884521", torusKey.publicAddress)
     }
 }

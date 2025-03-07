@@ -2,32 +2,26 @@ import BigInt
 import Foundation
 import TorusUtils
 
-public class SessionData: Codable {
-    let privateKey: String
-    let publicAddress: String
-    let signatures: TorusKey.SessionData?
-    let userInfo: UserInfo?
+public struct SessionData: Codable {
+    public let privateKey: String
+    public let publicAddress: String
+    public let signatures: [String]?
+    public let userInfo: UserInfo?
+    let sessionNamespace: String
 
-    init(privateKey: String, publicAddress: String, signatures: TorusKey.SessionData? = nil, userInfo: UserInfo? = nil) {
+    enum CodingKeys: String, CodingKey {
+        case privateKey = "privKey"
+        case publicAddress
+        case signatures
+        case userInfo
+        case sessionNamespace
+    }
+
+    init(privateKey: String, publicAddress: String, signatures: [String]? = nil, userInfo: UserInfo? = nil, sessionNamespace: String = "sfa") {
         self.privateKey = privateKey
         self.publicAddress = publicAddress
         self.signatures = signatures
         self.userInfo = userInfo
-    }
-
-    public func getPrivateKey() -> String {
-        return privateKey
-    }
-
-    public func getPublicAddress() -> String {
-        return publicAddress
-    }
-    
-    public func getUserInfo() -> UserInfo? {
-        return userInfo
-    }
-    
-    public func getSignatures() -> TorusKey.SessionData? {
-        return self.signatures
+        self.sessionNamespace = sessionNamespace
     }
 }

@@ -15,9 +15,9 @@ let package = Package(
             targets: ["SingleFactorAuth"])
     ],
     dependencies: [
-        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from: "10.0.0"),
+        .package(url: "https://github.com/torusresearch/torus-utils-swift.git", from: "10.0.1"),
         .package(url: "https://github.com/vapor/jwt-kit.git", from: "4.0.0"),
-        .package(url: "https://github.com/Web3Auth/session-manager-swift.git", from: "6.0.2"),
+        .package(url: "https://github.com/Web3Auth/session-manager-swift.git", from: "6.1.0"),
         .package(url: "https://github.com/auth0/JWTDecode.swift.git", from: "3.2.0")
     ],
     targets: [
@@ -27,7 +27,8 @@ let package = Package(
                 .product(name: "TorusUtils", package: "torus-utils-swift"),
                 .product(name: "SessionManager", package: "session-manager-swift"),
                 .product(name: "JWTDecode", package: "JWTDecode.swift")
-            ]),
+            ]
+        ),
         .testTarget(
             name: "SingleFactorAuthTests",
             dependencies: ["SingleFactorAuth", .product(name: "JWTKit", package: "jwt-kit")])

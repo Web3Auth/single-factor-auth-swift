@@ -66,26 +66,20 @@ public class WebViewController: PlatformViewController, WKScriptMessageHandler {
             return
         }
         if let url = navigationAction.request.url, url.absoluteString.contains(redirectUrl) {
-            guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-                  let b64ParamsItem = components.queryItems?.first(where: { $0.name == "b64Params" }),
-                  let callbackFragment = b64ParamsItem.value,
-                  let b64ParamData = Data.fromBase64URL(callbackFragment) else {
-                decisionHandler(.allow)
-                return
-            }
-
-            do {
-                let signResponse = try JSONDecoder().decode(SignResponse.self, from: b64ParamData)
-                onSignResponse(signResponse)
-                
-                #if os(iOS)
-                dismiss(animated: true, completion: nil)
-                #elseif os(macOS)
-                self.view.window?.close()
-                #endif
-            } catch {
-                print("Decoding SignResponse failed: \(error)")
-            }
+            let host = url.host ?? ""
+            let fragment = url.fragment ?? ""
+            let component = URLComponents(string: host + "?" + fragment)
+            let queryItems = component?.queryItems
+            let b64ParamsItem = queryItems?.first(where: { $0.name == "b64Params" })
+            let callbackFragment = (b64ParamsItem?.value)!
+            let b64ParamString = Data.fromBase64URL(callbackFragment)
+            let signResponse = try? JSONDecoder().decode(SignResponse.self, from: b64ParamString!)
+            onSignResponse(signResponse!)
+            #if os(iOS)
+            dismiss(animated: true, completion: nil)
+            #elseif os(macOS)
+            self.view.window?.close()
+            #endif
         }
         decisionHandler(.allow)
     }

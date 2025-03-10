@@ -49,15 +49,27 @@ public class WebViewController: PlatformViewController, WKScriptMessageHandler {
         configuration.applicationNameForUserAgent = "Version/8.0.2 Safari/600.2.5"
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
 
+        webView?.removeFromSuperview()
         webView = WKWebView(frame: view.bounds, configuration: configuration)
         
         #if os(iOS)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        #elseif os(macOS)
+        webView.translatesAutoresizingMaskIntoConstraints = false
         #endif
         
         webView.uiDelegate = self
         webView.navigationDelegate = self
         view.addSubview(webView)
+        
+        #if os(macOS)
+        NSLayoutConstraint.activate([
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.topAnchor.constraint(equalTo: view.topAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        #endif
     }
 
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {

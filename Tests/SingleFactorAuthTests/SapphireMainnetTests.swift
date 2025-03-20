@@ -23,8 +23,8 @@ final class SapphireMainnetTests: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
 
         let requiredPrivateKey = "2c4b346a91ecd11fe8a02d111d00bd921bf9b543f0a1e811face91b5f28947d6"
-        XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
-        XCTAssertEqual("0x0934d844a0a6db37CF75aF0269436ae1b2Ae5D36", torusKey.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, torusKey.privateKey)
+        XCTAssertEqual("0x0934d844a0a6db37CF75aF0269436ae1b2Ae5D36", torusKey.publicAddress)
     }
 
     func testInitialise() async throws {
@@ -33,8 +33,8 @@ final class SapphireMainnetTests: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
         try await singleFactoreAuth.initialize()
         let requiredPrivateKey = "2c4b346a91ecd11fe8a02d111d00bd921bf9b543f0a1e811face91b5f28947d6"
-        XCTAssertEqual(requiredPrivateKey, singleFactoreAuth.getSessionData()!.getPrivateKey())
-        XCTAssertEqual(torusKey.getPublicAddress(), singleFactoreAuth.getSessionData()!.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, singleFactoreAuth.getSessionData()!.privateKey)
+        XCTAssertEqual(torusKey.publicAddress, singleFactoreAuth.getSessionData()!.publicAddress)
     }
 
     func testAggregrateGetTorusKey() async throws {
@@ -43,8 +43,8 @@ final class SapphireMainnetTests: XCTestCase {
         let torusKey = try await singleFactoreAuth.connect(loginParams: loginParams)
 
         let requiredPrivateKey = "0c724bb285560dc41e585b91aa2ded94fdd703c2e7133dcc64b1361b0d1fd105"
-        XCTAssertEqual(requiredPrivateKey, torusKey.getPrivateKey())
-        XCTAssertEqual("0xA92E2C756B5b2abABc127907b02D4707dc085612", torusKey.getPublicAddress())
+        XCTAssertEqual(requiredPrivateKey, torusKey.privateKey)
+        XCTAssertEqual("0xA92E2C756B5b2abABc127907b02D4707dc085612", torusKey.publicAddress)
     }
 
     func testLogout() async throws {
